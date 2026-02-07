@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACENTRAL - Struktur Organisasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { 
+                        emas: '#FFD700', 
+                        emasGelap: '#B8860B',
+                        gelap: '#050505', 
+                        cardBg: '#101010' 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; }
+        
+        /* STYLE PEMIMPIN (BPH) */
+        .card-leader {
+            background: linear-gradient(145deg, #151515, #0a0a0a);
+            border: 1px solid #222;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-leader:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #FFD700;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+        }
+
+        /* STYLE DIVISI */
+        .card-divisi {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card-divisi:hover {
+            border-color: #FFD700;
+            background: rgba(30, 30, 30, 0.8);
+            transform: translateY(-5px);
+        }
+
+        /* CONNECTOR LINES */
+        .line-vertical { width: 2px; background: #333; margin: 0 auto; height: 30px; }
+        .line-horizontal { height: 2px; background: #333; width: 80%; margin: 0 auto 30px auto; }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <nav class="w-full py-5 px-6 flex justify-between items-center border-b border-gray-800 bg-gelap/80 backdrop-blur-md sticky top-0 z-50">
+        <a href="index.html" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas to-yellow-200">ACENTRAL</a>
+        <div class="flex gap-6 text-sm font-semibold">
+            <a href="index.html" class="text-gray-400 hover:text-white transition">Home</a>
+            <a href="members.html" class="text-gray-400 hover:text-white transition">Members</a>
+        </div>
+    </nav>
+
+    <header class="text-center pt-16 pb-10 px-4" data-aos="fade-down">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white">STRUKTUR <span class="text-emas">ACENTRAL</span></h1>
+        <p class="text-gray-400 mt-2">Majelis Perwakilan Kelas</p>
+    </header>
+
+    <main class="container mx-auto px-4 pb-24">
+
+        <div class="flex flex-col items-center mb-4" data-aos="zoom-in">
+            <div id="ketuaContainer" class="w-72"></div>
+            <div class="line-vertical bg-gradient-to-b from-emas to-gray-800"></div>
+        </div>
+
+        <div class="mb-12" data-aos="fade-up">
+            <div class="line-horizontal bg-gradient-to-r from-transparent via-emas to-transparent opacity-50"></div>
+            <h3 class="text-center text-emas text-xs uppercase tracking-widest mb-6 font-bold">WAKIL KETUA</h3>
+            <div id="wakilContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4 justify-center"></div>
+            <div class="line-vertical h-12"></div>
+        </div>
+
+        <div class="mb-24" data-aos="fade-up">
+            <h3 class="text-center text-white text-xs uppercase tracking-widest mb-6 font-bold">TIM SEKRETARIS</h3>
+            <div id="sekreContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 justify-center"></div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-12" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-2">BENDAHARA & <span class="text-emas">DIVISI</span></h2>
+                <div class="h-1 w-20 bg-emas mx-auto rounded"></div>
+            </div>
+
+            <div id="divisiContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-black py-8 text-center border-t border-gray-900 text-gray-600 text-sm">
+        &copy; 2024 ACENTRAL Organization.
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        /* =========================================
+           DATA STRUKTUR (EDIT NAMA DISINI)
+           ========================================= */
+
+        // 1. KETUA
+        const ketua = { nama: "Muhammad Nazir", jabatan: "KETUA ANGKATAN", img: "potomember/20220261.jpg" };
+
+        // 2. WAKIL (4 Orang)
+        const wakil = [
+            { nama: "wilma Bantani Hartoyo", jabatan: "WAKIL 1", img: "potomember/20220101.jpg" },
+            { nama: "Khalifah Al-Qodri Ramadhon", jabatan: "WAKIL 2", img: "potomember/20220304.jpg" },
+            { nama: "Hafiz Zamzami Ramadhan", jabatan: "WAKIL 3", img: "potomember/20220074.jpg" },
+            { nama: "Annisa Fazar", jabatan: "WAKIL 4", img: "potomember/20220178.jpg" },
+        ];
+
+        // 3. SEKRETARIS (5 Orang)
+        const sekre = [
+            { nama: "Reza Alfiano", jabatan: "SEKRETARIS 1", img: "potomember/20220206.jpg" },
+            { nama: "Millah Ayu Meidan Maha", jabatan: "SEKRETARIS 2", img: "potomember/20220011.jpg" },
+            { nama: "Syifa Fauziah", jabatan: "SEKRETARIS 3", img: "potomember/20220141.jpg" },
+            { nama: "Faqih Nurmujaddid Bastona ", jabatan: "SEKRETARIS 4", img: "potomember/20220537.jpg" },
+            { nama: "Nurul Hikmah Putri Asidik", jabatan: "SEKRETARIS 5", img: "potomember/20220525.jpg" },
+        ];
+
+        // 4. DIVISI & BENDAHARA (Sesuai Request)
+        // Format: Nama Divisi, Koordinator, Jumlah Anggota (Gua buatin array kosong sesuai jumlah)
+        const divisiList = [
+            {
+                nama: "BENDAHARA",
+                koor: "Koordinator Bendahara",
+                img: "potomember/20220238.jpg",
+                anggota: ["Atthariq Ilham Firdaus", "Tsabita Madina Azzahro", "Aufa Iyad Faiz Barigh Albara", "Aluna Aisyawara Al Fatihah"] // 4 Orang
+            },
+            {
+                nama: "SARANA PRASARANA",
+                koor: "Koordinator Sapras",
+                img: "potomember/20220177.jpg",
+                anggota: ["Alfiyan Hidayat", "Fitri Septiani", "Aziz Ali Hasan", "Aulia Najmussaqib"] // 4 Orang
+            },
+            {
+                nama: "DISTERHAM",
+                desc: "(Disiplin Tertib HAM)",
+                koor: "Koordinator Disterham",
+                img: "potomember/20220183.jpg",
+                anggota: ["Akmal Firjatulloh", "Nadien Kartika Ayu", "Ilbran Darusslam", "Zidane El Syahid", "Assyfa Nurul Hidayah"] // 5 Orang
+            },
+            {
+                nama: "HUBUNGAN MASYARAKAT",
+                koor: "Koordinator Humas",
+                img: "potomember/20220326.jpg",
+                anggota: ["Wildan Al Jabbar", "Zaskia Ramadhani", "Hamdan Setiawan", "Siti Mawall Arochsayally Assma"] // 4 Orang
+            },
+            {
+                nama: "PERIBADATAN",
+                koor: "Koordinator Ibadah",
+                img: "potomember/20220070.jpg",
+                anggota: ["Rizqo Al Huda", "Sekar Harum Nur Alfath", "Muhammad Irfan Syabani", "Yujib Alzura"] // 4 Orang
+            },
+            {
+                nama: "SENI & OLAHRAGA",
+                koor: "Koordinator SenOR",
+                img: "potomember/20220240.jpg",
+                anggota: ["Raffa Satria Bintang", "mutiara Naura Shabrina", "Muhammad Akbarullah Three Kanto", "Ayyub Abdul Jabbar", "Tiara Putri Ramadhani"] // 5 Orang
+            },
+            {
+                nama: "EKSTRAKULIKULER",
+                koor: "Koordinator Ekskul",
+                img: "potomember/20220030.jpg",
+                anggota: ["Miftah Azzam Al Fawwaz", "Kinata Umara Basyirah", "Faiq Atha Nur Hibatullah", "Nabila Indah Ikhwana"] // 4 Orang
+            },
+            {
+                nama: "PENGEMBANGAN BAHASA",
+                koor: "Koordinator Bahasa",
+                img: "potomember/20220316.jpg",
+                anggota: ["Daffa Isbani", "Wahyu Reda Nuryanti", "Fahmi Hidayatullah", "Thalita Yasmin"] // 4 Orang
+            },
+            {
+                nama: "INFORMASI PUBLIKASI",
+                koor: "Koordinator InfoPub",
+                img: "potomember/20220191.jpg",
+                anggota: ["Kanzi Daffa Fauzan", "Nazila Qurrota Aini", "Rizky Aditya Ramadhan", "Sophie Raisa Ramadani"] // 4 Orang
+            },
+            {
+                nama: "KEPRAMUKAAN",
+                koor: "Koordinator Pramuka",
+                img: "potomember/20220497.jpg",
+                anggota: ["Azis Al Hakim", "Fadilah Nur Amanah", "Faiz Mumtaz", "Aisah Hafizah Anwar"] // 4 Orang
+            },
+            {
+                nama: "GIZI & KESEHATAN",
+                koor: "Koordinator Gikes",
+                img: "potomember/20220355.jpg",
+                anggota: ["Daffa Aulia Ghifaro", "Aura Aqwa Mumtaza", "Alfan Wibosono", "Muhammad Arkan Al Faridzi", "Cahaya Diffa Negara"] // 5 Orang
+            },
+        ];
+
+        /* =========================================
+           RENDER LOGIC (Gak usah diubah)
+           ========================================= */
+
+        function createCard(data, type='small') {
+            // Style khusus buat Leader Top
+            return `
+                <div class="card-leader rounded-xl overflow-hidden group relative w-full aspect-[3/4]">
+                    <img src="${data.img}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500">
+                    <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/80 to-transparent p-3 pt-8">
+                        <p class="text-emas text-[10px] font-bold tracking-widest uppercase mb-1">${data.jabatan}</p>
+                        <h4 class="text-white font-bold text-sm md:text-md leading-tight truncate">${data.nama}</h4>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createDivisi(data) {
+            // List Anggota
+            const listAnggota = data.anggota.map(nama => 
+                `<li class="text-gray-400 text-xs py-1 border-b border-gray-700/50 last:border-0 flex items-start gap-2">
+                    <span class="text-emas mt-0.5">›</span> ${nama}
+                 </li>`
+            ).join('');
+
+            return `
+                <div class="card-divisi rounded-xl p-5 group">
+                    <div class="flex items-center gap-4 mb-4 border-b border-gray-700/50 pb-4">
+                        <div class="w-14 h-14 rounded-full border border-gray-600 group-hover:border-emas overflow-hidden shrink-0 transition">
+                            <img src="${data.img}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm md:text-base leading-tight group-hover:text-emas transition uppercase">${data.nama}</h4>
+                            ${data.desc ? `<p class="text-[10px] text-gray-500">${data.desc}</p>` : ''}
+                            <p class="text-[10px] text-gray-400 mt-1">Koordinator: <span class="text-gray-200">${data.koor}</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <ul class="space-y-1">
+                            ${listAnggota}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // EXECUTE RENDER
+        document.getElementById('ketuaContainer').innerHTML = createCard(ketua);
+        document.getElementById('wakilContainer').innerHTML = wakil.map(d => createCard(d)).join('');
+        document.getElementById('sekreContainer').innerHTML = sekre.map(d => createCard(d)).join('');
+        document.getElementById('divisiContainer').innerHTML = divisiList.map(d => createDivisi(d)).join('');
+
+    </script>
+</body>
+</html>

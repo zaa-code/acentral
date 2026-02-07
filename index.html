@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACENTRAL - Official Website</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { emas: '#FFD700', emasGlow: '#FDB931', gelap: '#050505', abu: '#1a1a1a', kaca: 'rgba(255, 255, 255, 0.05)' },
+                    animation: { 'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        
+        /* 1. PRELOADER */
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #050505; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease-out, visibility 0.8s; }
+        .loader-hidden { opacity: 0; visibility: hidden; }
+        .tracking-in-expand { animation: tracking-in-expand 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) both; }
+        @keyframes tracking-in-expand { 0% { letter-spacing: -0.5em; opacity: 0; } 40% { opacity: 0.6; } 100% { opacity: 1; letter-spacing: 0.2em; } }
+        .loading-bar { width: 0%; height: 2px; background-color: #FFD700; box-shadow: 0 0 10px #FFD700; animation: loadProgress 2.5s ease-in-out forwards; }
+        @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* 2. NAVBAR & UI */
+        .nav-transparent { background: transparent; padding-top: 2rem; padding-bottom: 2rem; }
+        .nav-scrolled { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 215, 0, 0.1); padding-top: 1rem; padding-bottom: 1rem; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .nav-link:hover { color: #FFD700; transition: color 0.3s; }
+        
+        /* 3. MARQUEE SQUAD */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee-container { display: flex; overflow: hidden; width: 100%; position: relative; mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%); }
+        .marquee-content { display: flex; gap: 2rem; padding: 1rem 0; width: max-content; animation: scrollLeft 50s linear infinite; }
+        .marquee-container:hover .marquee-content { animation-play-state: paused; }
+        
+        .squad-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .squad-card:hover { transform: translateY(-8px) scale(1.05); z-index: 50; }
+
+        /* 4. BLOG CARD (NO GRAYSCALE) */
+        .blog-card { transition: all 0.3s ease; border: 1px solid #1a1a1a; }
+        .blog-card:hover { transform: translateY(-10px); border-color: #FFD700; box-shadow: 0 10px 30px -10px rgba(255, 215, 0, 0.15); }
+        .blog-card:hover .blog-img { transform: scale(1.1); }
+
+        /* 5. KREASI SKEWED CARD (MODERN GEN-Z) */
+        .skew-box {
+            transform: skewX(-6deg);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #111;
+            border: 1px solid #222;
+        }
+        .kreasi-group:hover .skew-box {
+            transform: skewX(0deg) scale(1.02);
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+        .skew-content { transform: skewX(6deg); transition: all 0.5s ease; }
+        .kreasi-group:hover .skew-content { transform: skewX(0deg); }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <div id="preloader">
+        <h1 class="text-6xl md:text-8xl font-extrabold text-emas tracking-in-expand drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]">ACENTRAL</h1>
+        <div class="loading-bar-container w-[200px] h-[2px] bg-[#1a1a1a] mt-4 rounded overflow-hidden">
+            <div class="loading-bar"></div>
+        </div>
+        <p class="text-gray-500 text-xs mt-4 tracking-widest uppercase animate-pulse">Memuat Aset Digital...</p>
+    </div>
+
+    <nav id="mainNav" class="fixed w-full z-50 transition-all duration-500 nav-transparent opacity-0" style="transition: opacity 1s ease 2.5s;">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas to-yellow-200 tracking-wider hover:opacity-80 transition">ACENTRAL</a>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
+                <a href="#" class="text-white nav-link">Home</a>
+                <a href="struktur.html" class="text-gray-300 nav-link">Struktur</a>
+                <a href="members.html" class="text-gray-300 nav-link">Members</a>
+                <a href="kreasi.html" class="text-gray-300 nav-link">Kreasi</a>
+                <a href="blog.html" class="text-gray-300 nav-link">Blog</a>
+            </div>
+            <div class="md:hidden text-emas text-2xl cursor-pointer">☰</div>
+        </div>
+    </nav>
+
+    <section class="h-screen flex flex-col justify-center items-center text-center px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div class="absolute w-96 h-96 bg-emas rounded-full blur-[150px] opacity-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="z-10" data-aos="zoom-out" data-aos-duration="1500" data-aos-delay="2000"> 
+            <h1 class="text-5xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas via-yellow-200 to-emas text-glow mb-2 text-glow">ACENTRAL</h1>
+            <p class="text-xs md:text-lg tracking-[0.3em] text-gray-400 uppercase mb-8">Angkatan Cahaya Emas<br>Menuju Transformasi Revolusioner Al-zaytun</p>
+            <a href="#about" class="px-8 py-3 rounded-full border border-emas text-emas hover:bg-emas hover:text-black transition duration-300 font-semibold shadow-[0_0_15px_rgba(255,215,0,0.2)]">Explore Us</a>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 container mx-auto px-6 relative">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div data-aos="fade-right">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">High Council <span class="text-emas">ACENTRAL</span></h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-emas to-transparent rounded"></div>
+            </div>
+            <a href="struktur.html" class="hidden md:flex items-center gap-2 text-emas border-b border-emas pb-1 hover:text-white hover:border-white transition group">
+                <span>Lihat Struktur Lengkap</span> <span class="group-hover:translate-x-1 transition">→</span>
+            </a>
+        </div>
+
+        <div class="flex overflow-x-auto md:grid md:grid-cols-5 gap-6 pb-8 md:pb-0 hide-scrollbar snap-x snap-mandatory" data-aos="fade-up">
+            <div class="min-w-[200px] md:min-w-0 snap-center group relative rounded-xl overflow-hidden aspect-[3/4] border border-gray-800 hover:border-emas transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-2 cursor-pointer">
+                <img src="potomember/20220261.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" onerror="this.src='https://via.placeholder.com/300x400'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 p-4 w-full text-left">
+                    <p class="text-emas text-xs font-bold tracking-widest mb-1 uppercase font-mono">Ketua Angkatan</p>
+                    <h3 class="text-white font-bold text-lg leading-tight group-hover:text-emas transition">Muhammad Nazir</h3>
+                </div>
+            </div>
+            
+            <div class="min-w-[200px] md:min-w-0 snap-center group relative rounded-xl overflow-hidden aspect-[3/4] border border-gray-800 hover:border-emas transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:-translate-y-2 cursor-pointer">
+                <img src="potomember/20220101.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" onerror="this.src='https://via.placeholder.com/300x400'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 p-4 w-full text-left">
+                    <p class="text-gray-400 text-xs font-bold tracking-widest mb-1 uppercase group-hover:text-emas">Wakil 1</p>
+                    <h3 class="text-white font-bold text-lg leading-tight">Wilma Bantani</h3>
+                </div>
+            </div>
+
+            <div class="min-w-[200px] md:min-w-0 snap-center group relative rounded-xl overflow-hidden aspect-[3/4] border border-gray-800 hover:border-emas transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:-translate-y-2 cursor-pointer">
+                <img src="potomember/20220304.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" onerror="this.src='https://via.placeholder.com/300x400'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 p-4 w-full text-left">
+                    <p class="text-gray-400 text-xs font-bold tracking-widest mb-1 uppercase group-hover:text-emas">Wakil 2</p>
+                    <h3 class="text-white font-bold text-lg leading-tight">Khalifah Al-Qodri</h3>
+                </div>
+            </div>
+
+            <div class="min-w-[200px] md:min-w-0 snap-center group relative rounded-xl overflow-hidden aspect-[3/4] border border-gray-800 hover:border-emas transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:-translate-y-2 cursor-pointer">
+                <img src="potomember/20220074.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" onerror="this.src='https://via.placeholder.com/300x400'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 p-4 w-full text-left">
+                    <p class="text-gray-400 text-xs font-bold tracking-widest mb-1 uppercase group-hover:text-emas">Wakil 3</p>
+                    <h3 class="text-white font-bold text-lg leading-tight">Hafiz Zamzami</h3>
+                </div>
+            </div>
+
+            <div class="min-w-[200px] md:min-w-0 snap-center group relative rounded-xl overflow-hidden aspect-[3/4] border border-gray-800 hover:border-emas transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:-translate-y-2 cursor-pointer">
+                <img src="potomember/20220178.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" onerror="this.src='https://via.placeholder.com/300x400'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 p-4 w-full text-left">
+                    <p class="text-gray-400 text-xs font-bold tracking-widest mb-1 uppercase group-hover:text-emas">Wakil 4</p>
+                    <h3 class="text-white font-bold text-lg leading-tight">Annisa Fazar</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 bg-[#050505] relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emas rounded-full blur-[200px] opacity-5 pointer-events-none"></div>
+        <div class="container mx-auto px-6 text-center mb-16 relative z-10">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">The Squad <span class="text-emas">(470+)</span></h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">Wajah-wajah penerus masa depan. Hover untuk kenalan lebih dekat.</p>
+        </div>
+        <div class="marquee-container py-4 mb-8">
+            <div id="marqueeTrack" class="marquee-content scroll-left hover:cursor-pointer"></div>
+        </div>
+        <div class="text-center relative z-10 -mt-6">
+            <a href="members.html" class="text-gray-500 hover:text-emas text-sm transition border-b border-transparent hover:border-emas pb-1">Buka Gallery Grid Mode (Search) →</a>
+        </div>
+    </section>
+
+    <section class="py-24 container mx-auto px-6 bg-[#080808]">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div data-aos="fade-right">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">Berita & <span class="text-emas">Artikel</span></h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-emas to-transparent rounded"></div>
+            </div>
+            <a href="blog.html" class="hidden md:flex items-center gap-2 text-emas border-b border-emas pb-1 hover:text-white hover:border-white transition group">
+                <span>Baca Semua Artikel</span> <span class="group-hover:translate-x-1 transition">→</span>
+            </a>
+        </div>
+        <div id="blogPreviewContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-aos="fade-up"></div>
+    </section>
+
+    <section class="py-32 container mx-auto px-6">
+        <div class="kreasi-group flex flex-col md:flex-row items-center gap-16 cursor-pointer" onclick="window.location.href='kreasi.html'">
+            <div class="md:w-1/2" data-aos="fade-right">
+                <h2 class="text-5xl font-extrabold mb-6 text-white uppercase tracking-tighter">Tab <span class="text-emas">Kreasi</span></h2>
+                <p class="text-gray-400 mb-8 leading-relaxed text-lg font-light">Kumpulan karya mahakarya, dokumentasi eksklusif, dan jejak digital perjalanan kita. Dari sinematografi perpisahan hingga konten kreatif estetik.</p>
+                <a href="kreasi.html" class="inline-flex items-center gap-3 text-emas font-bold text-lg hover:text-white transition group">
+                    Tonton Semua Video <span class="group-hover:translate-x-2 transition">→</span>
+                </a>
+            </div>
+            <div class="md:w-1/2 w-full" data-aos="fade-left">
+                <div class="skew-box p-1 rounded-2xl relative group overflow-hidden">
+                    <div class="skew-content bg-gray-900 aspect-video rounded-xl flex items-center justify-center relative overflow-hidden group">
+                        
+                        <div class="w-20 h-20 bg-emas rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition cursor-pointer z-20 shadow-[0_0_20px_rgba(255,215,0,0.5)]">
+                            <span class="text-black text-3xl ml-1">▶</span>
+                        </div>
+                        
+                        <img src="assets/1.png" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition duration-700">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-12 text-center text-gray-600 text-sm border-t border-gray-900">
+        &copy; 2024 ACENTRAL. WE ARE THE GOLDEN GENERATION.
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="db_members.js"></script>
+    <script src="db_blog.js"></script>
+
+    <script>
+        AOS.init({ once: true, duration: 1000 });
+
+        // --- 1. PRELOADER ---
+        window.addEventListener("load", function () {
+            const loader = document.getElementById("preloader");
+            const nav = document.getElementById("mainNav");
+            setTimeout(function () {
+                loader.classList.add("loader-hidden");
+                document.body.style.overflow = "auto";
+                nav.style.opacity = "1";
+                loader.addEventListener("transitionend", function () { if(loader.parentNode) loader.parentNode.removeChild(loader); AOS.refresh(); });
+            }, 2500); 
+        });
+
+        // --- 2. NAVBAR SCROLL ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) { nav.classList.remove('nav-transparent'); nav.classList.add('nav-scrolled'); }
+            else { nav.classList.add('nav-transparent'); nav.classList.remove('nav-scrolled'); }
+        });
+
+        // --- 3. SQUAD LOGIC ---
+        const folderFoto = "potomember/"; 
+        const extFoto = ".jpg";
+        let allMembers = [];
+        if (typeof dataAngkatan !== 'undefined') {
+            allMembers = dataAngkatan.map(item => ({
+                nama: item["Nama Santri"], kelas: item["Kelas"], img: `${folderFoto}${item["No Induk"]}${extFoto}`
+            }));
+        }
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        const randomMembers = shuffleArray([...allMembers]).slice(0, 50);
+        function createCard(member) {
+            return `
+                <div class="squad-card w-48 h-64 bg-gray-900/50 rounded-xl border border-gray-800/50 relative overflow-hidden group hover:border-emas shrink-0 backdrop-blur-sm">
+                    <img src="${member.img}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500" loading="lazy" onerror="this.src='https://via.placeholder.com/300x400?text=ACENTRAL'">
+                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/90 to-transparent p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                        <p class="text-emas font-bold text-sm truncate">${member.nama}</p>
+                        <p class="text-[10px] text-gray-300 uppercase tracking-wider mt-1 font-mono">${member.kelas}</p>
+                    </div>
+                </div>`;
+        }
+        const track = document.getElementById('marqueeTrack');
+        if (randomMembers.length > 0) {
+            let cardsHTML = '';
+            randomMembers.forEach(member => { cardsHTML += createCard(member); });
+            track.innerHTML = cardsHTML + cardsHTML;
+        }
+
+        // --- 4. BLOG PREVIEW LOGIC (FULL COLOR - NO GRAYSCALE) ---
+        if (typeof dbBlog !== 'undefined') {
+            const blogContainer = document.getElementById('blogPreviewContainer');
+            dbBlog.slice(0, 3).forEach(art => {
+                const cuplikanTeks = art.isi.replace(/<[^>]*>?/gm, '').substring(0, 120) + '...';
+                const html = `
+                    <div class="blog-card bg-[#111] rounded-xl overflow-hidden group cursor-pointer h-full flex flex-col relative" onclick="window.location.href='blog.html'">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${art.thumbnail}" class="w-full h-full object-cover blog-img transition duration-700">
+                            <div class="absolute top-3 left-3 bg-emas text-black px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">${art.kategori}</div>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow bg-[#111]">
+                            <p class="text-[10px] text-gray-500 mb-2 uppercase font-mono tracking-widest">${art.tanggal}</p>
+                            <h3 class="text-lg font-bold text-white mb-3 group-hover:text-emas transition line-clamp-2">${art.judul}</h3>
+                            <p class="text-gray-400 text-xs leading-relaxed line-clamp-2 mb-4 font-light">${cuplikanTeks}</p>
+                            <div class="mt-auto flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-emas border-b border-emas uppercase tracking-widest">Baca Cerita</span>
+                                <i class="ri-arrow-right-up-line text-emas text-xl"></i>
+                            </div>
+                        </div>
+                    </div>`;
+                blogContainer.innerHTML += html;
+            });
+        }
+    </script>
+</body>
+</html>

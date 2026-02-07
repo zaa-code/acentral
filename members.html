@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACENTRAL - Gallery Angkatan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { emas: '#FFD700', gelap: '#050505', abu: '#1a1a1a' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; }
+        
+        /* Efek Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Hover Effect Card */
+        .member-card:hover img { transform: scale(1.1); filter: grayscale(0%); }
+        .member-card img { transition: all 0.5s ease; filter: grayscale(100%); }
+        .member-card:hover .info-overlay { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <nav class="w-full py-5 px-6 flex justify-between items-center bg-gelap/90 backdrop-blur sticky top-0 z-50 border-b border-gray-800">
+        <a href="index.html" class="text-2xl font-bold text-emas">ACENTRAL</a>
+        <div class="flex gap-4">
+            <input type="text" id="searchInput" placeholder="Cari nama / kelas..." class="bg-abu border border-gray-700 rounded-full px-4 py-2 text-sm text-white focus:border-emas focus:outline-none transition w-32 md:w-64">
+            <a href="index.html" class="px-4 py-2 border border-gray-600 rounded-full text-xs hover:bg-white hover:text-black transition">Home</a>
+        </div>
+    </nav>
+
+    <header class="py-12 text-center container mx-auto px-4">
+        <h1 class="text-4xl font-bold text-white mb-2">GALLERY <span class="text-emas">MEMBER</span></h1>
+        <p class="text-gray-400">Total Personil: <span class="text-emas font-bold text-xl" id="totalCount">Loading...</span></p>
+    </header>
+
+    <main class="container mx-auto px-4 pb-20">
+        <div id="galleryGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+            </div>
+
+        <div class="text-center mt-12">
+            <button id="btnLoadMore" onclick="loadMore()" class="px-8 py-3 bg-gray-800 border border-gray-600 text-white rounded-full hover:bg-emas hover:text-black hover:border-emas transition duration-300 shadow-lg">
+                Tampilkan Lebih Banyak 👇
+            </button>
+            <p id="endMessage" class="hidden text-gray-500 mt-4">Sudah ditampilkan semua, Bos!</p>
+        </div>
+    </main>
+
+    <script src="db_members.js"></script>
+
+    <script>
+        /* ===========================================================
+           CONFIG FOLDER & DATA
+           =========================================================== */
+        
+        // GANTI DI SINI: Nama folder tempat foto disimpan
+        const folderFoto = "potomember/"; 
+        const extFoto = ".jpg"; 
+
+        // MAPPING DATA DARI JSON (db_members.js)
+        let allMembers = [];
+
+        // Cek dulu apakah dataAngkatan berhasil dipanggil
+        if (typeof dataAngkatan !== 'undefined') {
+            allMembers = dataAngkatan.map(item => {
+                return {
+                    id: item["No"],
+                    nama: item["Nama Santri"], // Ambil dari kolom "Nama Santri"
+                    kelas: item["Kelas"],      // Ambil dari kolom "Kelas"
+                    
+                    // LOGIC FOTO: Folder + No Induk + .jpg
+                    // Contoh hasil: potomember/20220001.jpg
+                    img: `${folderFoto}${item["No Induk"]}${extFoto}` 
+                };
+            });
+        } else {
+            alert("File db_members.js belum kebaca bro! Cek lagi filenya.");
+        }
+
+        /* ===========================================================
+           LOGIC TAMPILAN
+           =========================================================== */
+        
+        document.getElementById('totalCount').innerText = allMembers.length;
+        
+        let currentPage = 1;
+        let itemsPerPage = 20; 
+        let currentData = allMembers;
+        const grid = document.getElementById('galleryGrid');
+        const btn = document.getElementById('btnLoadMore');
+        const endMsg = document.getElementById('endMessage');
+
+        function renderGallery(data, page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = page * itemsPerPage;
+            const sliceData = data.slice(start, end);
+
+            sliceData.forEach(member => {
+                const card = `
+                    <div class="member-card group relative bg-[#111] rounded-xl overflow-hidden aspect-[3/4] border border-gray-800 cursor-pointer">
+                        <div class="absolute inset-0 skeleton z-0"></div>
+                        
+                        <img src="${member.img}" loading="lazy" 
+                             alt="${member.nama}" 
+                             class="w-full h-full object-cover relative z-10"
+                             onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'"> 
+                        
+                        <div class="info-overlay absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-20 opacity-0 translate-y-4 transition duration-300">
+                            <h3 class="text-white font-bold text-sm leading-tight">${member.nama}</h3>
+                            <div class="flex justify-between items-end mt-1">
+                                <p class="text-emas text-[10px] uppercase tracking-wider">${member.kelas || 'Angkatan'}</p>
+                                <p class="text-gray-500 text-[9px]">#${member.id}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+
+            if (end >= data.length) {
+                btn.classList.add('hidden');
+                endMsg.classList.remove('hidden');
+            } else {
+                btn.classList.remove('hidden');
+                endMsg.classList.add('hidden');
+            }
+        }
+
+        function loadMore() {
+            currentPage++;
+            renderGallery(currentData, currentPage);
+        }
+
+        // Render Awal
+        renderGallery(currentData, currentPage);
+
+        /* ===========================================================
+           FITUR SEARCH
+           =========================================================== */
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            grid.innerHTML = ""; 
+            currentPage = 1; 
+
+            // Filter berdasarkan Nama ATAU Kelas
+            currentData = allMembers.filter(m => 
+                m.nama.toLowerCase().includes(keyword) || 
+                (m.kelas && m.kelas.toLowerCase().includes(keyword))
+            );
+
+            if (currentData.length > 0) {
+                renderGallery(currentData, currentPage);
+                endMsg.classList.add('hidden');
+            } else {
+                grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Yah, "${keyword}" gak ketemu bro :(</div>`;
+                btn.classList.add('hidden');
+            }
+        });
+
+    </script>
+</body>
+</html>

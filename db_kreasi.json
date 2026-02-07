@@ -1,0 +1,40 @@
+{
+  "videos": [
+    {
+      "judul": "Official Aftermovie Perpisahan",
+      "deskripsi": "Momen haru dan bahagia pelepasan angkatan.",
+      "platform": "youtube",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      "kategori": "Documentary"
+    },
+    {
+      "judul": "Short Movie: Santri",
+      "deskripsi": "Film pendek karya anak teater.",
+      "platform": "youtube",
+      "url": "https://youtu.be/5GVfVRvc0lc?si=rVz7KWKpYt4NH3Ym",
+      "thumbnail": "https://img.youtu.be/5GVfVRvc0lc?si=rVz7KWKpYt4NH3Ym",
+      "kategori": "Short Movie"
+    }
+  ],
+  "images": [
+    {
+      "judul": "Poster Event Akbar",
+      "karya": "Divisi Multimedia",
+      "imgUrl": "https://images.unsplash.com/photo-1626785774573-4b7993125651?w=600&q=80",
+      "linkOriginal": "#",
+      "tipe": "Design"
+    }
+  ],
+  "others": [
+    {
+      "namaProject": "Sistem E-Voting MPK",
+      "kategori": "Web Development",
+      "deskripsi": "Aplikasi pemilihan ketua angkatan berbasis web realtime.",
+      "status": "Completed",
+      "techStack": ["PHP", "MySQL"],
+      "creator": ["Team IT"],
+      "linkDemo": "#"
+    }
+  ]
+}

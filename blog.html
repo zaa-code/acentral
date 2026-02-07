@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACENTRAL - Articles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { emas: '#FFD700', gelap: '#050505', abu: '#1a1a1a', abuTerang: '#2a2a2a' },
+                    typography: {
+                        DEFAULT: { css: { color: '#9ca3af', strong: { color: '#fff' }, h1: { color: '#fff' }, h2: { color: '#fff' }, h3: { color: '#fff' }, blockquote: { color: '#FFD700', borderLeftColor: '#FFD700' } } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
+
+        /* CARD HOVER */
+        .blog-card { transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); border: 1px solid #222; }
+        .blog-card:hover { transform: translateY(-8px); border-color: #FFD700; box-shadow: 0 10px 40px -10px rgba(255, 215, 0, 0.15); }
+        .blog-card:hover .img-zoom { transform: scale(1.05); }
+        
+        /* TYPOGRAPHY ARTIKEL */
+        .article-content p { margin-bottom: 1.5rem; line-height: 1.8; font-size: 1.05rem; color: #d1d5db; }
+        .article-content h2 { font-size: 1.75rem; font-weight: 700; color: white; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .article-content h3 { font-size: 1.4rem; font-weight: 600; color: #FFD700; margin-top: 2rem; margin-bottom: 0.75rem; }
+        .article-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; color: #d1d5db; }
+        .article-content li { margin-bottom: 0.5rem; }
+        .article-content blockquote { border-left: 4px solid #FFD700; padding-left: 1.5rem; font-style: italic; color: #9ca3af; margin: 2rem 0; background: rgba(255, 215, 0, 0.05); padding: 1.5rem; border-radius: 0 10px 10px 0; }
+
+        /* SIDEBAR STICKY */
+        .sidebar-sticky { position: sticky; top: 100px; }
+
+        /* ANIMATIONS */
+        .fade-in { animation: fadeIn 0.6s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <nav class="w-full py-5 px-6 flex justify-between items-center bg-gelap/90 backdrop-blur sticky top-0 z-50 border-b border-gray-800">
+        <a href="index.html" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas to-yellow-200">ACENTRAL</a>
+        <div class="flex gap-4 items-center">
+            <div class="hidden md:flex space-x-6 text-sm font-medium mr-4">
+                <a href="index.html" class="text-gray-400 hover:text-emas transition">Home</a>
+                <a href="#" class="text-white border-b border-emas">Blog</a>
+            </div>
+            <a href="index.html" class="text-sm text-gray-400 hover:text-white flex items-center gap-2 transition md:hidden">
+                <i class="ri-arrow-left-line"></i> Back
+            </a>
+        </div>
+    </nav>
+
+    <div id="view-list" class="min-h-screen pb-24">
+        
+        <header class="pt-20 pb-12 px-6 container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-2" data-aos="fade-right">ACENTRAL <span class="text-emas">VOICE</span></h1>
+                    <p class="text-gray-400 max-w-lg" data-aos="fade-right" data-aos-delay="100">
+                        Suara angkatan, rekam jejak, dan opini bebas. Baca apa yang sedang hangat dibicarakan di asrama dan sekolah.
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-auto flex flex-col md:flex-row gap-3" data-aos="fade-left">
+                    <div class="relative">
+                        <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" id="searchInput" placeholder="Cari artikel..." class="w-full md:w-64 bg-[#111] border border-gray-800 rounded-full py-3 pl-10 pr-6 text-sm text-white focus:outline-none focus:border-emas transition">
+                    </div>
+                    <select id="categoryFilter" class="bg-[#111] border border-gray-800 rounded-full py-3 px-6 text-sm text-gray-300 focus:outline-none focus:border-emas cursor-pointer">
+                        <option value="all">Semua Kategori</option>
+                        <option value="Event">Event</option>
+                        <option value="Opini">Opini</option>
+                        <option value="News">News</option>
+                        <option value="Akademik">Akademik</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="featured-container" class="mb-16 cursor-pointer group" onclick="openArticle(1)">
+                </div>
+
+            <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="h-8 w-1 bg-emas rounded-full"></div>
+                    <h2 class="text-2xl font-bold text-white">Terbaru</h2>
+                </div>
+                <span class="text-xs text-gray-500 italic">Menampilkan post terbaru</span>
+            </div>
+            
+            <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+
+            <div id="empty-state" class="hidden text-center py-20">
+                <i class="ri-ghost-line text-6xl text-gray-800 mb-4"></i>
+                <p class="text-gray-500">Artikel tidak ditemukan.</p>
+            </div>
+
+        </header>
+    </div>
+
+    <div id="view-detail" class="hidden min-h-screen bg-[#050505] animate-fade-in">
+        
+        <div class="fixed top-0 left-0 h-1 bg-emas z-[60] w-0 transition-all duration-100" id="readingProgress"></div>
+
+        <button onclick="closeArticle()" class="fixed bottom-8 right-8 z-50 w-14 h-14 bg-emas text-black rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,215,0,0.4)] hover:scale-110 transition group">
+            <i class="ri-arrow-left-line text-xl group-hover:-translate-x-1 transition"></i>
+        </button>
+
+        <div class="relative w-full h-[60vh] overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent z-10"></div>
+            <img id="detail-image" src="" class="w-full h-full object-cover fixed-img">
+            
+            <div class="absolute bottom-0 left-0 w-full z-20 container mx-auto px-6 pb-12">
+                <span id="detail-category" class="bg-emas text-black px-3 py-1 text-xs font-bold uppercase tracking-widest rounded mb-4 inline-block">Kategori</span>
+                <h1 id="detail-title" class="text-3xl md:text-6xl font-bold text-white mb-4 leading-tight drop-shadow-lg">Judul Artikel</h1>
+                
+                <div class="flex flex-wrap items-center gap-6 text-sm text-gray-300">
+                    <div class="flex items-center gap-2">
+                        <img id="detail-avatar" src="" class="w-8 h-8 rounded-full border border-gray-500">
+                        <span id="detail-author" class="font-semibold text-white">Penulis</span>
+                    </div>
+                    <span class="flex items-center gap-1"><i class="ri-calendar-line"></i> <span id="detail-date">Tanggal</span></span>
+                    <span class="flex items-center gap-1"><i class="ri-time-line"></i> <span id="detail-readtime">5 min read</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                
+                <div class="lg:col-span-2">
+                    <div id="detail-content" class="article-content text-lg font-light text-gray-300 border-b border-gray-800 pb-12">
+                        </div>
+
+                    <div class="py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div id="detail-tags" class="flex flex-wrap gap-2">
+                            </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-500 font-bold uppercase">Share:</span>
+                            <button class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-green-600 hover:text-white transition flex items-center justify-center"><i class="ri-whatsapp-line"></i></button>
+                            <button class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-blue-500 hover:text-white transition flex items-center justify-center"><i class="ri-twitter-x-line"></i></button>
+                            <button class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-emas hover:text-black transition flex items-center justify-center" onclick="alert('Link tersalin!')"><i class="ri-link"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 md:p-8">
+                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <i class="ri-chat-1-line text-emas"></i> Komentar (3)
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full bg-gray-800">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="text-white font-bold text-sm">Ahmad Fulan</h4>
+                                        <span class="text-xs text-gray-600">2 jam yang lalu</span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm">Valid banget nih artikelnya! Relate parah sama anak kelas akhir 😂</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="w-10 h-10 rounded-full bg-gray-800">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="text-white font-bold text-sm">Siti Aminah</h4>
+                                        <span class="text-xs text-gray-600">5 jam yang lalu</span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm">Semangat terus buat tim redaksi ACENTRAL! Ditunggu liputan event selanjutnya.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-gray-800">
+                            <textarea placeholder="Tulis komentar..." class="w-full bg-[#111] border border-gray-800 rounded-lg p-4 text-sm text-white focus:border-emas focus:outline-none h-24 resize-none mb-3"></textarea>
+                            <button class="px-6 py-2 bg-emas text-black font-bold text-sm rounded hover:bg-white transition">Kirim Komentar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden lg:block relative">
+                    <div class="sidebar-sticky space-y-8">
+                        
+                        <div class="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 text-center">
+                            <img id="sidebar-avatar" src="" class="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-emas p-1">
+                            <h4 id="sidebar-author" class="text-white font-bold text-lg">Nama Penulis</h4>
+                            <p class="text-xs text-emas font-bold uppercase tracking-widest mb-3">Kontributor Utama</p>
+                            <p class="text-gray-400 text-sm text-left leading-relaxed">
+                                Siswa aktif angkatan ACENTRAL yang gemar menulis dan mendokumentasikan setiap momen berharga.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
+                            <h4 class="text-white font-bold mb-4 border-b border-gray-800 pb-2">Trending Now 🔥</h4>
+                            <ul class="space-y-4">
+                                <li class="group cursor-pointer">
+                                    <span class="text-gray-500 text-xs block mb-1">12 Mei 2024</span>
+                                    <h5 class="text-gray-300 text-sm font-medium group-hover:text-emas transition">Panggung Gembira: Pecah Telor!</h5>
+                                </li>
+                                <li class="group cursor-pointer">
+                                    <span class="text-gray-500 text-xs block mb-1">10 Jan 2024</span>
+                                    <h5 class="text-gray-300 text-sm font-medium group-hover:text-emas transition">Drama Classmeeting X.A vs X.B</h5>
+                                </li>
+                                <li class="group cursor-pointer">
+                                    <span class="text-gray-500 text-xs block mb-1">05 Feb 2024</span>
+                                    <h5 class="text-gray-300 text-sm font-medium group-hover:text-emas transition">5 Kantin Terbaik versi Santri</h5>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
+                            <h4 class="text-white font-bold mb-4 border-b border-gray-800 pb-2">Tag Populer</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs bg-[#1a1a1a] text-gray-400 px-3 py-1 rounded cursor-pointer hover:bg-emas hover:text-black transition">#Event</span>
+                                <span class="text-xs bg-[#1a1a1a] text-gray-400 px-3 py-1 rounded cursor-pointer hover:bg-emas hover:text-black transition">#Opini</span>
+                                <span class="text-xs bg-[#1a1a1a] text-gray-400 px-3 py-1 rounded cursor-pointer hover:bg-emas hover:text-black transition">#Akademik</span>
+                                <span class="text-xs bg-[#1a1a1a] text-gray-400 px-3 py-1 rounded cursor-pointer hover:bg-emas hover:text-black transition">#Humor</span>
+                                <span class="text-xs bg-[#1a1a1a] text-gray-400 px-3 py-1 rounded cursor-pointer hover:bg-emas hover:text-black transition">#Tips</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-20 border-t border-gray-800 pt-10">
+                <h3 class="text-2xl font-bold text-white mb-8">Baca Juga Artikel Lainnya</h3>
+                <div id="related-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="bg-black py-10 text-center border-t border-gray-900 mt-auto">
+        <p class="text-gray-500 text-sm">&copy; 2024 ACENTRAL Blog Division.</p>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script src="db_blog.js"></script>
+
+    <script>
+        AOS.init();
+
+        /* =========================================
+           LOGIC BLOG SYSTEM
+           ========================================= */
+        
+        // 1. Render Featured (Headline)
+        function renderFeatured() {
+            if (typeof dbBlog === 'undefined' || dbBlog.length === 0) return;
+            const featured = dbBlog[0]; // Ambil yang paling atas
+
+            const html = `
+                <div class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-gray-900 border border-gray-800 group shadow-2xl">
+                    <img src="${featured.thumbnail}" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition duration-700 img-zoom">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
+                        <span class="bg-emas text-black text-[10px] font-bold px-3 py-1 rounded uppercase mb-4 inline-block tracking-widest shadow-lg">
+                            ${featured.kategori}
+                        </span>
+                        <h2 class="text-2xl md:text-5xl font-bold text-white mb-4 leading-tight group-hover:text-emas transition">
+                            ${featured.judul}
+                        </h2>
+                        <div class="flex items-center gap-4 text-xs md:text-sm text-gray-300 font-medium">
+                            <div class="flex items-center gap-2">
+                                <img src="${featured.avatar}" class="w-6 h-6 rounded-full border border-gray-500">
+                                <span>${featured.penulis}</span>
+                            </div>
+                            <span>•</span>
+                            <span>${featured.tanggal}</span>
+                            <span>•</span>
+                            <span>${featured.readTime}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('featured-container').innerHTML = html;
+        }
+
+        // 2. Render List Grid
+        function renderList(data) {
+            if (!data) data = (typeof dbBlog !== 'undefined') ? dbBlog.slice(1) : []; // Default ambil dari dbBlog, lewati yang pertama
+            
+            const grid = document.getElementById('posts-grid');
+            const empty = document.getElementById('empty-state');
+            grid.innerHTML = '';
+
+            if(data.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            data.forEach(post => {
+                // Buat cuplikan teks bersih dari HTML
+                const cuplikanTeks = post.isi.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...';
+
+                const card = `
+                    <div class="blog-card bg-[#0a0a0a] rounded-xl overflow-hidden flex flex-col h-full cursor-pointer group" onclick="openArticle(${post.id})">
+                        <div class="h-52 overflow-hidden relative">
+                            <img src="${post.thumbnail}" class="w-full h-full object-cover img-zoom transition duration-700">
+                            <div class="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-[10px] text-white font-bold border border-white/10 tracking-wider">
+                                ${post.kategori}
+                            </div>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="text-xs text-gray-500 mb-3 flex items-center gap-2">
+                                <i class="ri-calendar-line"></i> ${post.tanggal}
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3 leading-snug group-hover:text-emas transition">
+                                ${post.judul}
+                            </h3>
+                            <p class="text-sm text-gray-400 line-clamp-2 mb-4 leading-relaxed">
+                                ${cuplikanTeks}
+                            </p>
+                            <div class="mt-auto pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-semibold text-gray-400">
+                                <div class="flex items-center gap-2">
+                                    <img src="${post.avatar}" class="w-6 h-6 rounded-full">
+                                    <span>${post.penulis}</span>
+                                </div>
+                                <span class="group-hover:translate-x-1 transition text-emas">Baca <i class="ri-arrow-right-line"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        // 3. Render Related Posts (Random)
+        function renderRelated(currentId) {
+            if (typeof dbBlog === 'undefined') return;
+            const container = document.getElementById('related-grid');
+            const related = dbBlog.filter(p => p.id !== currentId).slice(0, 3); 
+            
+            let html = '';
+            related.forEach(post => {
+                html += `
+                    <div class="group cursor-pointer" onclick="openArticle(${post.id})">
+                        <div class="rounded-lg overflow-hidden h-32 mb-3 border border-gray-800 relative">
+                            <img src="${post.thumbnail}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <h4 class="text-white font-bold text-sm leading-tight group-hover:text-emas transition">${post.judul}</h4>
+                        <p class="text-xs text-gray-500 mt-1">${post.tanggal}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // 4. Handle Filter
+        function handleFilter() {
+            if (typeof dbBlog === 'undefined') return;
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+
+            const filtered = dbBlog.filter(post => {
+                const matchSearch = post.judul.toLowerCase().includes(keyword) || post.penulis.toLowerCase().includes(keyword);
+                const matchCat = category === 'all' || post.kategori === category;
+                return matchSearch && matchCat;
+            });
+            renderList(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('keyup', handleFilter);
+        document.getElementById('categoryFilter').addEventListener('change', handleFilter);
+
+        // 5. OPEN ARTICLE FUNCTION (SPA)
+        function openArticle(id) {
+            if (typeof dbBlog === 'undefined') return;
+            const post = dbBlog.find(p => p.id === id);
+            if(!post) return;
+
+            // Fill Data
+            document.getElementById('detail-category').innerText = post.kategori;
+            document.getElementById('detail-title').innerText = post.judul;
+            document.getElementById('detail-author').innerText = post.penulis;
+            document.getElementById('detail-date').innerText = post.tanggal;
+            document.getElementById('detail-readtime').innerText = post.readTime;
+            document.getElementById('detail-image').src = post.thumbnail;
+            document.getElementById('detail-content').innerHTML = post.isi;
+            document.getElementById('sidebar-author').innerText = post.penulis;
+            document.getElementById('sidebar-avatar').src = post.avatar;
+            document.getElementById('detail-avatar').src = post.avatar;
+
+            // Tags
+            const tagContainer = document.getElementById('detail-tags');
+            tagContainer.innerHTML = post.tags.map(t => `<span class="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded cursor-pointer hover:text-emas transition">#${t}</span>`).join('');
+
+            // Render Related
+            renderRelated(id);
+
+            // Switch View
+            const list = document.getElementById('view-list');
+            const detail = document.getElementById('view-detail');
+            list.style.display = 'none';
+            detail.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function closeArticle() {
+            document.getElementById('view-detail').classList.add('hidden');
+            document.getElementById('view-list').style.display = 'block';
+        }
+
+        // Reading Progress Bar
+        window.onscroll = function() {
+            if(!document.getElementById('view-detail').classList.contains('hidden')) {
+                let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                let scrolled = (winScroll / height) * 100;
+                document.getElementById("readingProgress").style.width = scrolled + "%";
+            }
+        };
+
+        // Initialize
+        renderFeatured();
+        renderList();
+
+    </script>
+</body>
+</html>

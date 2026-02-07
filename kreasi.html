@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACENTRAL - Creative Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { emas: '#FFD700', gelap: '#050505', abu: '#1a1a1a' },
+                    animation: { 'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        
+        /* UI UTILS */
+        .loader-hidden { opacity: 0; visibility: hidden; }
+        .skeleton { background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 0.5rem; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        /* TABS */
+        .tab-content { display: none; opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
+        .tab-content.active { display: block; opacity: 1; transform: translateY(0); }
+        .tab-btn.active { background: #FFD700; color: black; font-weight: 600; border-color: #FFD700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+        
+        /* CARD STYLES */
+        .kreasi-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: #0a0a0a; border: 1px solid #222; }
+        .kreasi-card:hover { transform: translateY(-8px); border-color: #FFD700; box-shadow: 0 10px 40px -10px rgba(255, 215, 0, 0.1); z-index: 10; }
+        
+        /* EBOOK / PROJECT CARD */
+        .book-card:hover .book-cover { transform: scale(1.05) rotate(2deg); }
+        .play-btn { transition: transform 0.3s ease; }
+        .group:hover .play-btn { transform: scale(1.15); background: #FFD700; color: black; border-color: #FFD700; }
+    </style>
+</head>
+<body>
+
+    <nav class="w-full py-5 px-6 flex justify-between items-center bg-gelap/90 backdrop-blur sticky top-0 z-50 border-b border-gray-800">
+        <a href="index.html" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas to-yellow-200">ACENTRAL</a>
+        <div class="flex gap-4">
+            <a href="https://www.instagram.com/acentral.official" target="_blank" class="hidden md:flex items-center gap-2 text-xs font-bold bg-white/10 px-4 py-2 rounded-full hover:bg-emas hover:text-black transition border border-white/20 group">
+                <i class="ri-instagram-line text-lg group-hover:scale-110 transition"></i> Publikasikan Karya
+            </a>
+            <a href="index.html" class="text-sm text-gray-400 hover:text-white flex items-center gap-2 transition">
+                <i class="ri-arrow-left-line"></i> Kembali
+            </a>
+        </div>
+    </nav>
+
+    <header class="pt-20 pb-12 text-center px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-emas/10 rounded-full blur-[100px] pointer-events-none animate-pulse-fast"></div>
+        <h1 class="text-4xl md:text-7xl font-bold text-white mb-4 relative z-10" data-aos="zoom-in">GALERI <span class="text-emas">KREASI</span></h1>
+        <p class="text-gray-400 max-w-2xl mx-auto text-sm md:text-base relative z-10 leading-relaxed" data-aos="fade-up">
+            Arsip digital mahakarya angkatan. Menampilkan sinematografi, seni visual, dan inovasi teknologi.
+        </p>
+    </header>
+
+    <div class="flex flex-wrap justify-center gap-3 mb-16 px-4 relative z-20" data-aos="fade-up" data-aos-delay="200">
+        <button onclick="changeTab('video')" id="btn-video" class="tab-btn active px-6 py-2.5 rounded-full border border-gray-800 bg-[#111] hover:border-emas/50 text-gray-300 text-sm md:text-base flex items-center gap-2 transition">
+            <i class="ri-movie-2-line"></i> Cinema
+        </button>
+        <button onclick="changeTab('image')" id="btn-image" class="tab-btn px-6 py-2.5 rounded-full border border-gray-800 bg-[#111] hover:border-emas/50 text-gray-300 text-sm md:text-base flex items-center gap-2 transition">
+            <i class="ri-gallery-line"></i> Visual Art
+        </button>
+        <button onclick="changeTab('other')" id="btn-other" class="tab-btn px-6 py-2.5 rounded-full border border-gray-800 bg-[#111] hover:border-emas/50 text-gray-300 text-sm md:text-base flex items-center gap-2 transition">
+            <i class="ri-book-open-line"></i> Projects & Books
+        </button>
+    </div>
+
+    <main class="container mx-auto px-6 pb-32 min-h-screen">
+
+        <div id="tab-video" class="tab-content active">
+            <div id="videoContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="text-center mt-12 hidden" id="loadMore-video-container">
+                <button onclick="loadMore('video')" class="px-8 py-3 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:border-emas hover:bg-gray-900 transition text-sm font-semibold">Tampilkan Lainnya ↓</button>
+            </div>
+        </div>
+
+        <div id="tab-image" class="tab-content">
+            <div id="imageContainer" class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"></div>
+            <div class="text-center mt-12 hidden" id="loadMore-image-container">
+                <button onclick="loadMore('image')" class="px-8 py-3 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:border-emas hover:bg-gray-900 transition text-sm font-semibold">Tampilkan Foto Lainnya ↓</button>
+            </div>
+        </div>
+
+        <div id="tab-other" class="tab-content">
+            <div id="otherContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="text-center mt-12 hidden" id="loadMore-other-container">
+                <button onclick="loadMore('other')" class="px-8 py-3 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:border-emas hover:bg-gray-900 transition text-sm font-semibold">Tampilkan Project Lainnya ↓</button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-black py-10 text-center border-t border-gray-900">
+        <p class="text-gray-500 text-sm">&copy; 2024 ACENTRAL Creative Division.</p>
+    </footer>
+
+   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="db_kreasi.js"></script> 
+    
+    <script>
+        AOS.init();
+
+        const ITEMS_PER_PAGE = 9;
+        let currentPage = { video: 1, image: 1, other: 1 };
+
+        // --- FUNGSI BARU: AMBIL ID YOUTUBE DARI LINK ---
+        function getYouTubeThumbnail(url) {
+            let videoId = "";
+            
+            // Cek berbagai format link youtube (youtu.be, watch?v=, embed, dll)
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                videoId = match[2];
+                // Mengembalikan link thumbnail kualitas tinggi (HD)
+                return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            } else {
+                // Gambar cadangan kalo linknya error
+                return 'https://via.placeholder.com/800x450/000000/FFFFFF?text=Video+Error';
+            }
+        }
+
+        const getPlatformIcon = (plat) => {
+            if(plat === 'youtube') return 'ri-youtube-fill text-red-500';
+            if(plat === 'instagram') return 'ri-instagram-fill text-pink-500';
+            return 'ri-global-line text-blue-400';
+        }
+
+        const getEmptyStateHTML = (msg) => `
+            <div class="col-span-full py-20 text-center text-gray-500">
+                <i class="ri-folder-unknow-line text-4xl mb-2"></i>
+                <p>Belum ada ${msg}</p>
+            </div>`;
+
+        // --- RENDER LOGIC ---
+        async function renderItems(type, isLoadMore = false) {
+            const container = document.getElementById(`${type}Container`);
+            const btnContainer = document.getElementById(`loadMore-${type}-container`);
+            
+            if (typeof dbKreasi === 'undefined') return;
+
+            const keyMap = { 'video': 'videos', 'image': 'images', 'other': 'others' };
+            const dataKey = keyMap[type];
+            const allData = dbKreasi[dataKey];
+
+            if (!allData || allData.length === 0) {
+                container.innerHTML = getEmptyStateHTML(type);
+                if(btnContainer) btnContainer.classList.add('hidden');
+                return;
+            }
+
+            const start = (currentPage[type] - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const dataSlice = allData.slice(start, end);
+
+            let html = '';
+            dataSlice.forEach(item => {
+                
+                // --- 1. RENDER VIDEO (DENGAN LOGIC OTOMATIS THUMBNAIL) ---
+                if (type === 'video') {
+                    
+                    // Logic: Kalau platform youtube, ambil otomatis. Kalau bukan, pake data thumbnail manual
+                    let finalThumbnail = item.thumbnail;
+                    
+                    if (item.platform === 'youtube' && item.url) {
+                        finalThumbnail = getYouTubeThumbnail(item.url);
+                    } else if (!finalThumbnail) {
+                        finalThumbnail = 'https://via.placeholder.com/800x450?text=No+Thumb';
+                    }
+
+                    html += `
+                        <a href="${item.url}" target="_blank" class="kreasi-card group relative block rounded-xl overflow-hidden aspect-video animate-fade-in">
+                            <img src="${finalThumbnail}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
+                            <div class="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded text-[10px] text-emas font-bold border border-emas/20 flex items-center gap-1">
+                                <i class="${getPlatformIcon(item.platform)}"></i> ${item.kategori}
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="play-btn w-14 h-14 rounded-full border-2 border-white/30 flex items-center justify-center text-white text-xl backdrop-blur-sm bg-black/20">
+                                    <i class="ri-play-fill ml-1"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black via-black/90 to-transparent">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-emas transition truncate">${item.judul}</h3>
+                                <p class="text-gray-400 text-xs mt-1 truncate">${item.deskripsi}</p>
+                            </div>
+                        </a>`;
+                
+                // --- 2. RENDER IMAGE ---
+                } else if (type === 'image') {
+                    const img = item.imgUrl || 'https://via.placeholder.com/600x800?text=No+Image';
+                    html += `
+                        <div class="kreasi-card relative rounded-xl overflow-hidden group bg-gray-900 break-inside-avoid mb-6 animate-fade-in">
+                            <img src="${img}" class="w-full h-auto object-cover transition duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-5">
+                                <span class="text-emas text-[10px] font-bold tracking-widest uppercase mb-1">${item.tipe}</span>
+                                <h3 class="text-white font-bold text-base leading-tight">${item.judul}</h3>
+                                <p class="text-gray-300 text-xs mt-1 mb-4">By: ${item.karya}</p>
+                                <a href="${item.linkOriginal}" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-black bg-white px-4 py-2 rounded-full hover:bg-emas transition w-max">
+                                    <i class="ri-eye-line"></i> Lihat
+                                </a>
+                            </div>
+                        </div>`;
+                
+                // --- 3. RENDER OTHERS ---
+                } else if (type === 'other') {
+                    const isEbook = item.tipe === 'ebook';
+                    const btnIcon = isEbook ? 'ri-book-read-line' : 'ri-arrow-right-up-line';
+                    const btnText = isEbook ? 'Baca E-Book' : 'Lihat Project';
+                    const cover = item.cover || 'https://via.placeholder.com/600x800?text=No+Cover';
+
+                    html += `
+                        <div class="kreasi-card book-card bg-[#0a0a0a] rounded-xl overflow-hidden group flex flex-col h-full animate-fade-in border border-gray-800 hover:border-emas transition-all">
+                            <div class="relative h-48 overflow-hidden bg-gray-900 flex items-center justify-center p-4">
+                                <div class="absolute inset-0 bg-cover bg-center opacity-30 blur-lg" style="background-image: url('${cover}')"></div>
+                                <img src="${cover}" class="book-cover relative h-full w-auto object-contain shadow-2xl transition duration-500 rounded-md z-10">
+                                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded text-[10px] text-white font-bold border border-white/10 z-20">
+                                    ${item.kategori}
+                                </div>
+                            </div>
+                            <div class="p-5 flex flex-col flex-grow">
+                                <h3 class="text-lg font-bold text-white mb-2 group-hover:text-emas transition line-clamp-2">${item.judul}</h3>
+                                <p class="text-gray-400 text-xs mb-4 line-clamp-3 leading-relaxed">${item.deskripsi}</p>
+                                <div class="mt-auto pt-4 border-t border-gray-800 flex items-center justify-between">
+                                    <span class="text-xs text-gray-500 font-semibold"><i class="ri-user-3-line mr-1"></i> ${item.creator}</span>
+                                    <a href="${item.fileUrl || '#'}" target="_blank" class="text-xs font-bold bg-white/10 hover:bg-emas hover:text-black text-white px-3 py-1.5 rounded transition flex items-center gap-1">
+                                        ${btnText} <i class="${btnIcon}"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            if(isLoadMore) container.insertAdjacentHTML('beforeend', html);
+            else container.innerHTML = html;
+
+            if(btnContainer) {
+                if (end >= allData.length) btnContainer.classList.add('hidden');
+                else btnContainer.classList.remove('hidden');
+            }
+        }
+
+        function changeTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`btn-${tabName}`).classList.add('active');
+            if(document.getElementById(`${tabName}Container`).children.length === 0) renderItems(tabName);
+        }
+
+        function loadMore(type) {
+            currentPage[type]++;
+            renderItems(type, true);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderItems('video');
+        });
+    </script>
+</body>
+</html>
