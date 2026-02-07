@@ -2,13 +2,40 @@ const dbKreasi = {
     // 1. DATA CINEMA (VIDEO)
 videos: [
         {
-            judul: "Short Movie: Senja di Asrama",
-            deskripsi: "Film pendek karya anak teater tentang persahabatan.",
+            judul: "All IN ONE | Eps.1",
+            deskripsi: "Film pendek bertemakan sahabat karya ACENTRAL.",
             platform: "youtube",
             // Cukup taruh link youtube lengkap (bisa link share atau link browser)
             url: "https://youtu.be/5GVfVRvc0lc?si=rVz7KWKpYt4NH3Ym", 
             thumbnail: "", // KOSONGKAN SAJA, NANTI OTOMATIS KEISI
             kategori: "Short Movie"
+        },
+        {
+            judul: "ALUMNI AL-ZAYTUN YANG PASTI..",
+            deskripsi: "Podcast santai Ukku tim dari lognews.",
+            platform: "youtube",
+            // Cukup taruh link youtube lengkap (bisa link share atau link browser)
+            url: "https://youtu.be/WA0nf7G3CTM?si=Rujssj54O__biVcL", 
+            thumbnail: "", // KOSONGKAN SAJA, NANTI OTOMATIS KEISI
+            kategori: "Podcast"
+        },
+        {
+            judul: "2016 adalah 10 tahun yang lalu.",
+            deskripsi: "Vidio ngobrol santai dari salah satu member ACENTRAL.",
+            platform: "youtube",
+            // Cukup taruh link youtube lengkap (bisa link share atau link browser)
+            url: "https://youtu.be/3liCZ-H9xkA?si=iyTHFLFVi5kS4U6y", 
+            thumbnail: "", // KOSONGKAN SAJA, NANTI OTOMATIS KEISI
+            kategori: "Ngobrol"
+        },
+        {
+            judul: "Akad | Duet cover by Qalishaati dan Atras",
+            deskripsi: "Cover music Akad dari payung teduh",
+            platform: "youtube",
+            // Cukup taruh link youtube lengkap (bisa link share atau link browser)
+            url: "https://youtu.be/4jiAROHAOtc?si=VeAfeitIEcIrG_Vg", 
+            thumbnail: "", // KOSONGKAN SAJA, NANTI OTOMATIS KEISI
+            kategori: "Cover"
         }
     ],
 
@@ -44,6 +71,15 @@ videos: [
             fileUrl: "cek-khodam.html", // Link Demo
             creator: "Reza A",
             tipe: "project" // Menandakan ini project/app
-        }
+        },
+        {
+            judul: "Cek Jodoh",
+            kategori: "Hiburan",
+            deskripsi: "Siapa nih yg lagi cari jodoh?? bisa banget loh kalian cek jodoh kalian disni, ayok cek sekarang!!",
+            cover: "assets/cek jodoh.png", // Screenshot Web
+            fileUrl: "cek-jodoh.html", // Link Demo
+            creator: "Reza A",
+            tipe: "project" // Menandakan ini project/app
+        },
     ]
 };

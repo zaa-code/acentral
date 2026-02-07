@@ -33,7 +33,7 @@
 
         /* 2. NAVBAR & UI */
         .nav-transparent { background: transparent; padding-top: 2rem; padding-bottom: 2rem; }
-        .nav-scrolled { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 215, 0, 0.1); padding-top: 1rem; padding-bottom: 1rem; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .nav-scrolled { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 215, 0, 0.1); padding-top: 1rem; padding-bottom: 1rem; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
         .nav-link:hover { color: #FFD700; transition: color 0.3s; }
         
         /* 3. MARQUEE SQUAD */
@@ -66,6 +66,10 @@
         }
         .skew-content { transform: skewX(6deg); transition: all 0.5s ease; }
         .kreasi-group:hover .skew-content { transform: skewX(0deg); }
+
+        /* MOBILE MENU ANIMATION */
+        #mobileMenu { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        #mobileMenu.open { max-height: 400px; opacity: 1; }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -79,16 +83,32 @@
     </div>
 
     <nav id="mainNav" class="fixed w-full z-50 transition-all duration-500 nav-transparent opacity-0" style="transition: opacity 1s ease 2.5s;">
-        <div class="container mx-auto px-6 flex justify-between items-center">
-            <a href="#" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas to-yellow-200 tracking-wider hover:opacity-80 transition">ACENTRAL</a>
-            <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
-                <a href="#" class="text-white nav-link">Home</a>
-                <a href="struktur.html" class="text-gray-300 nav-link">Struktur</a>
-                <a href="members.html" class="text-gray-300 nav-link">Members</a>
-                <a href="kreasi.html" class="text-gray-300 nav-link">Kreasi</a>
-                <a href="blog.html" class="text-gray-300 nav-link">Blog</a>
+        <div class="container mx-auto px-6 relative">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emas to-yellow-200 tracking-wider hover:opacity-80 transition">ACENTRAL</a>
+                
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
+                    <a href="#" class="text-white nav-link">Home</a>
+                    <a href="struktur.html" class="text-gray-300 nav-link">Struktur</a>
+                    <a href="members.html" class="text-gray-300 nav-link">Members</a>
+                    <a href="kreasi.html" class="text-gray-300 nav-link">Kreasi</a>
+                    <a href="blog.html" class="text-gray-300 nav-link">Blog</a>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden text-emas text-2xl focus:outline-none">
+                    <i class="ri-menu-3-line"></i>
+                </button>
             </div>
-            <div class="md:hidden text-emas text-2xl cursor-pointer">☰</div>
+
+            <div id="mobileMenu" class="md:hidden bg-black/90 backdrop-blur-md border-t border-gray-800 mt-4 rounded-xl">
+                <div class="flex flex-col p-4 space-y-4 text-center">
+                    <a href="#" class="text-white hover:text-emas transition py-2 border-b border-gray-800">Home</a>
+                    <a href="struktur.html" class="text-gray-300 hover:text-emas transition py-2 border-b border-gray-800">Struktur</a>
+                    <a href="members.html" class="text-gray-300 hover:text-emas transition py-2 border-b border-gray-800">Members</a>
+                    <a href="kreasi.html" class="text-gray-300 hover:text-emas transition py-2 border-b border-gray-800">Kreasi</a>
+                    <a href="blog.html" class="text-gray-300 hover:text-emas transition py-2">Blog</a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -237,12 +257,31 @@
             }, 2500); 
         });
 
-        // --- 2. NAVBAR SCROLL ---
+        // --- 2. NAVBAR SCROLL & MOBILE MENU ---
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
             if (window.scrollY > 50) { nav.classList.remove('nav-transparent'); nav.classList.add('nav-scrolled'); }
             else { nav.classList.add('nav-transparent'); nav.classList.remove('nav-scrolled'); }
         });
+
+        // FUNGSI MOBILE MENU YANG BARU
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if(mobileBtn && mobileMenu){
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('open');
+                // Ganti icon biar keren
+                const icon = mobileBtn.querySelector('i');
+                if(mobileMenu.classList.contains('open')){
+                    icon.classList.remove('ri-menu-3-line');
+                    icon.classList.add('ri-close-line');
+                } else {
+                    icon.classList.remove('ri-close-line');
+                    icon.classList.add('ri-menu-3-line');
+                }
+            });
+        }
 
         // --- 3. SQUAD LOGIC ---
         const folderFoto = "potomember/"; 
