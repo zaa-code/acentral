@@ -147,53 +147,22 @@
                 
                 <div class="lg:col-span-2">
                     <div id="detail-content" class="article-content text-lg font-light text-gray-300 border-b border-gray-800 pb-12">
-                        </div>
+                    </div>
 
                     <div class="py-8 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div id="detail-tags" class="flex flex-wrap gap-2">
-                            </div>
+                        </div>
+                        
                         <div class="flex items-center gap-3">
                             <span class="text-sm text-gray-500 font-bold uppercase">Share:</span>
-                            <button class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-green-600 hover:text-white transition flex items-center justify-center"><i class="ri-whatsapp-line"></i></button>
-                            <button class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-blue-500 hover:text-white transition flex items-center justify-center"><i class="ri-twitter-x-line"></i></button>
-                            <button class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-emas hover:text-black transition flex items-center justify-center" onclick="alert('Link tersalin!')"><i class="ri-link"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 md:p-8">
-                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <i class="ri-chat-1-line text-emas"></i> Komentar (3)
-                        </h3>
-                        
-                        <div class="space-y-6">
-                            <div class="flex gap-4">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full bg-gray-800">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="text-white font-bold text-sm">Ahmad Fulan</h4>
-                                        <span class="text-xs text-gray-600">2 jam yang lalu</span>
-                                    </div>
-                                    <p class="text-gray-400 text-sm">Valid banget nih artikelnya! Relate parah sama anak kelas akhir 😂</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="w-10 h-10 rounded-full bg-gray-800">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="text-white font-bold text-sm">Siti Aminah</h4>
-                                        <span class="text-xs text-gray-600">5 jam yang lalu</span>
-                                    </div>
-                                    <p class="text-gray-400 text-sm">Semangat terus buat tim redaksi ACENTRAL! Ditunggu liputan event selanjutnya.</p>
-                                </div>
-                            </div>
+                            <button onclick="copyCurrentLink()" class="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1a1a1a] text-white hover:bg-emas hover:text-black transition border border-gray-800 group">
+                                <i class="ri-link text-xl"></i>
+                                <span class="text-sm font-bold">Salin Link Artikel</span>
+                            </button>
                         </div>
 
-                        <div class="mt-8 pt-6 border-t border-gray-800">
-                            <textarea placeholder="Tulis komentar..." class="w-full bg-[#111] border border-gray-800 rounded-lg p-4 text-sm text-white focus:border-emas focus:outline-none h-24 resize-none mb-3"></textarea>
-                            <button class="px-6 py-2 bg-emas text-black font-bold text-sm rounded hover:bg-white transition">Kirim Komentar</button>
-                        </div>
                     </div>
-                </div>
+                    </div>
 
                 <div class="hidden lg:block relative">
                     <div class="sidebar-sticky space-y-8">
@@ -255,7 +224,6 @@
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
     <script src="db_blog.js"></script>
 
     <script>
@@ -268,7 +236,7 @@
         // 1. Render Featured (Headline)
         function renderFeatured() {
             if (typeof dbBlog === 'undefined' || dbBlog.length === 0) return;
-            const featured = dbBlog[0]; // Ambil yang paling atas
+            const featured = dbBlog[0]; 
 
             const html = `
                 <div class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-gray-900 border border-gray-800 group shadow-2xl">
@@ -299,7 +267,7 @@
 
         // 2. Render List Grid
         function renderList(data) {
-            if (!data) data = (typeof dbBlog !== 'undefined') ? dbBlog.slice(1) : []; // Default ambil dari dbBlog, lewati yang pertama
+            if (!data) data = (typeof dbBlog !== 'undefined') ? dbBlog.slice(1) : [];
             
             const grid = document.getElementById('posts-grid');
             const empty = document.getElementById('empty-state');
@@ -313,7 +281,6 @@
             }
 
             data.forEach(post => {
-                // Buat cuplikan teks bersih dari HTML
                 const cuplikanTeks = post.isi.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...';
 
                 const card = `
@@ -348,7 +315,7 @@
             });
         }
 
-        // 3. Render Related Posts (Random)
+        // 3. Render Related Posts
         function renderRelated(currentId) {
             if (typeof dbBlog === 'undefined') return;
             const container = document.getElementById('related-grid');
@@ -386,11 +353,16 @@
         document.getElementById('searchInput').addEventListener('keyup', handleFilter);
         document.getElementById('categoryFilter').addEventListener('change', handleFilter);
 
-        // 5. OPEN ARTICLE FUNCTION (SPA)
+        /* =========================================
+           5. OPEN ARTICLE (SPA + DEEP LINKING)
+           ========================================= */
         function openArticle(id) {
             if (typeof dbBlog === 'undefined') return;
             const post = dbBlog.find(p => p.id === id);
             if(!post) return;
+
+            // Update URL Hash biar bisa di-share (contoh: #post-1)
+            window.location.hash = 'post-' + id;
 
             // Fill Data
             document.getElementById('detail-category').innerText = post.kategori;
@@ -412,16 +384,27 @@
             renderRelated(id);
 
             // Switch View
-            const list = document.getElementById('view-list');
-            const detail = document.getElementById('view-detail');
-            list.style.display = 'none';
-            detail.classList.remove('hidden');
+            document.getElementById('view-list').style.display = 'none';
+            document.getElementById('view-detail').classList.remove('hidden');
             window.scrollTo(0,0);
         }
 
         function closeArticle() {
+            // Hapus Hash URL pas balik ke home
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+            
             document.getElementById('view-detail').classList.add('hidden');
             document.getElementById('view-list').style.display = 'block';
+        }
+
+        // FUNGSI COPY LINK (SMART COPY)
+        function copyCurrentLink() {
+            // Ini bakal copy URL lengkap termasuk #post-1
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert("Link artikel berhasil disalin! Silakan bagikan.");
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+            });
         }
 
         // Reading Progress Bar
@@ -434,9 +417,20 @@
             }
         };
 
-        // Initialize
-        renderFeatured();
-        renderList();
+        // Initialize & Cek URL Hash pas Loading
+        window.addEventListener('DOMContentLoaded', () => {
+            renderFeatured();
+            renderList();
+
+            // Cek apakah ada hash di URL (misal: acentral.vercel.app/blog.html#post-2)
+            const hash = window.location.hash;
+            if(hash && hash.startsWith('#post-')) {
+                const id = parseInt(hash.replace('#post-', ''));
+                if(!isNaN(id)) {
+                    openArticle(id);
+                }
+            }
+        });
 
     </script>
 </body>
