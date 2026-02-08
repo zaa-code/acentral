@@ -53,35 +53,15 @@
 
         /* SHARE MODAL */
         .share-modal { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.8); 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 1000; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); display: none; 
+            justify-content: center; align-items: center; z-index: 1000; 
             backdrop-filter: blur(5px);
         }
         .share-modal-content { 
-            background: #1a1a1a; 
-            padding: 2rem; 
-            border-radius: 16px; 
-            border: 1px solid #333;
-            max-width: 400px; 
-            width: 90%;
+            background: #1a1a1a; padding: 2rem; border-radius: 16px; 
+            border: 1px solid #333; max-width: 400px; width: 90%; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        
-        /* NOTIFICATION */
-        .share-notification {
-            animation: slideIn 0.3s ease forwards;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
@@ -100,7 +80,6 @@
         </div>
     </nav>
 
-    <!-- SHARE MODAL -->
     <div id="shareModal" class="share-modal">
         <div class="share-modal-content fade-in">
             <div class="flex justify-between items-center mb-6">
@@ -237,61 +216,17 @@
                     <div class="py-8 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div id="detail-tags" class="flex flex-wrap gap-2">
                             </div>
+                        
                         <div class="flex items-center gap-3">
                             <span class="text-sm text-gray-500 font-bold uppercase">Share:</span>
-                            <!-- Tombol share dengan 3 opsi -->
-                            <button onclick="openShareModal()" class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-emas hover:text-black transition flex items-center justify-center" title="Bagikan">
-                                <i class="ri-share-line"></i>
-                            </button>
-                            <!-- Opsi WhatsApp -->
-                            <button onclick="shareWhatsApp()" class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-green-600 hover:text-white transition flex items-center justify-center" title="Bagikan ke WhatsApp">
-                                <i class="ri-whatsapp-line"></i>
-                            </button>
-                            <!-- Opsi Twitter -->
-                            <button onclick="shareTwitter()" class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-blue-500 hover:text-white transition flex items-center justify-center" title="Bagikan ke Twitter">
-                                <i class="ri-twitter-x-line"></i>
-                            </button>
-                            <!-- Opsi Copy Link -->
-                            <button onclick="copyArticleLink()" class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white hover:bg-purple-600 hover:text-white transition flex items-center justify-center" title="Salin Link Artikel">
-                                <i class="ri-link"></i>
+                            <button onclick="openShareModal()" class="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1a1a1a] text-white hover:bg-emas hover:text-black transition border border-gray-800 group">
+                                <i class="ri-share-line text-xl"></i>
+                                <span class="text-sm font-bold">Bagikan Artikel</span>
                             </button>
                         </div>
                     </div>
-
-                    <div class="mt-8 bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 md:p-8">
-                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <i class="ri-chat-1-line text-emas"></i> Komentar (3)
-                        </h3>
-                        
-                        <div class="space-y-6">
-                            <div class="flex gap-4">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full bg-gray-800">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="text-white font-bold text-sm">Ahmad Fulan</h4>
-                                        <span class="text-xs text-gray-600">2 jam yang lalu</span>
-                                    </div>
-                                    <p class="text-gray-400 text-sm">Valid banget nih artikelnya! Relate parah sama anak kelas akhir 😂</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="w-10 h-10 rounded-full bg-gray-800">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="text-white font-bold text-sm">Siti Aminah</h4>
-                                        <span class="text-xs text-gray-600">5 jam yang lalu</span>
-                                    </div>
-                                    <p class="text-gray-400 text-sm">Semangat terus buat tim redaksi ACENTRAL! Ditunggu liputan event selanjutnya.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 pt-6 border-t border-gray-800">
-                            <textarea placeholder="Tulis komentar..." class="w-full bg-[#111] border border-gray-800 rounded-lg p-4 text-sm text-white focus:border-emas focus:outline-none h-24 resize-none mb-3"></textarea>
-                            <button class="px-6 py-2 bg-emas text-black font-bold text-sm rounded hover:bg-white transition">Kirim Komentar</button>
-                        </div>
+                    
                     </div>
-                </div>
 
                 <div class="hidden lg:block relative">
                     <div class="sidebar-sticky space-y-8">
@@ -323,7 +258,7 @@
                             </ul>
                         </div>
 
-                        <div class="bg-[#0a0a1a] border border-gray-800 rounded-xl p-6">
+                        <div class="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
                             <h4 class="text-white font-bold mb-4 border-b border-gray-800 pb-2">Tag Populer</h4>
                             <div class="flex flex-wrap gap-2">
                                 <span class="text-xs bg-[#1a1a1a] text-gray-400 px-3 py-1 rounded cursor-pointer hover:bg-emas hover:text-black transition">#Event</span>
@@ -352,129 +287,44 @@
         <p class="text-gray-500 text-sm">&copy; 2024 ACENTRAL Blog Division.</p>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <!-- Include db_blog.js di sini -->
     <script src="db_blog.js"></script>
-    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <script>
         AOS.init();
 
-        // Global variable untuk menyimpan artikel saat ini
-        let currentArticleId = null;
-        let currentArticleTitle = '';
-        
         /* =========================================
-           FUNGSI SHARE & COPY LINK
+           1. LOGIC SORTING OTOMATIS (AUTO UPDATE)
            ========================================= */
-        
-        // Fungsi untuk mendapatkan URL artikel saat ini
-        function getCurrentArticleUrl() {
-            // Jika ada parameter hash di URL (contoh: #article=1)
-            if (currentArticleId) {
-                const baseUrl = window.location.href.split('#')[0];
-                return `${baseUrl}#article=${currentArticleId}`;
-            }
-            // Fallback ke URL halaman saat ini
-            return window.location.href;
+        const monthMap = {
+            'januari': 0, 'februari': 1, 'maret': 2, 'april': 3, 'mei': 4, 'juni': 5,
+            'juli': 6, 'agustus': 7, 'september': 8, 'oktober': 9, 'november': 10, 'desember': 11,
+            'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+            'jul': 6, 'aug': 7, 'agu': 7, 'sep': 8, 'oct': 9, 'okt': 9, 'nov': 10, 'dec': 11, 'des': 11
+        };
+
+        function parseDate(dateStr) {
+            const parts = dateStr.split(' ');
+            if (parts.length < 3) return 0;
+            const day = parseInt(parts[0]);
+            const monthName = parts[1].toLowerCase();
+            const year = parseInt(parts[2]);
+            const month = monthMap[monthName] !== undefined ? monthMap[monthName] : 0;
+            return new Date(year, month, day).getTime();
         }
 
-        // Fungsi untuk mendapatkan title artikel
-        function getCurrentArticleTitle() {
-            return currentArticleTitle || document.getElementById('detail-title')?.innerText || 'Artikel ACENTRAL';
-        }
-
-        // Fungsi copy link artikel
-        function copyArticleLink() {
-            const url = getCurrentArticleUrl();
-            navigator.clipboard.writeText(url).then(() => {
-                showNotification('📋 Link artikel berhasil disalin!');
-            }).catch(() => {
-                // Fallback untuk browser lama
-                const tempInput = document.createElement('input');
-                tempInput.value = url;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                showNotification('📋 Link artikel berhasil disalin!');
+        if (typeof dbBlog !== 'undefined') {
+            dbBlog.sort((a, b) => {
+                return parseDate(b.tanggal) - parseDate(a.tanggal);
             });
         }
 
-        // Fungsi share ke WhatsApp
-        function shareWhatsApp() {
-            const url = encodeURIComponent(getCurrentArticleUrl());
-            const title = encodeURIComponent(getCurrentArticleTitle());
-            window.open(`https://wa.me/?text=${title}%0A%0A${url}`, '_blank');
-        }
-
-        // Fungsi share ke Twitter
-        function shareTwitter() {
-            const url = encodeURIComponent(getCurrentArticleUrl());
-            const title = encodeURIComponent(getCurrentArticleTitle());
-            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
-        }
-
-        // Fungsi share ke Facebook
-        function shareFacebook() {
-            const url = encodeURIComponent(getCurrentArticleUrl());
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-        }
-
-        // Fungsi untuk menampilkan modal share
-        function openShareModal() {
-            const modal = document.getElementById('shareModal');
-            const linkText = document.getElementById('shareLinkText');
-            linkText.textContent = getCurrentArticleUrl();
-            modal.style.display = 'flex';
-        }
-
-        // Fungsi untuk menutup modal share
-        function closeShareModal() {
-            document.getElementById('shareModal').style.display = 'none';
-        }
-
-        // Fungsi untuk copy link di modal
-        function copyCurrentLink() {
-            const url = getCurrentArticleUrl();
-            navigator.clipboard.writeText(url).then(() => {
-                const btn = document.getElementById('copyLinkBtn');
-                const originalText = btn.textContent;
-                btn.textContent = '✓ Tersalin!';
-                btn.classList.add('bg-green-600');
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.classList.remove('bg-green-600');
-                }, 2000);
-            });
-        }
-
-        // Fungsi untuk menampilkan notifikasi
-        function showNotification(message) {
-            // Hapus notifikasi sebelumnya jika ada
-            const oldNotif = document.querySelector('.share-notification');
-            if (oldNotif) oldNotif.remove();
-            
-            // Buat notifikasi baru
-            const notif = document.createElement('div');
-            notif.className = 'share-notification fixed bottom-24 right-8 bg-emas text-black px-4 py-3 rounded-lg shadow-lg z-[100] animate-fade-in flex items-center gap-2';
-            notif.innerHTML = `<i class="ri-check-line"></i> <span>${message}</span>`;
-            document.body.appendChild(notif);
-            
-            // Hapus notifikasi setelah 3 detik
-            setTimeout(() => {
-                notif.remove();
-            }, 3000);
-        }
-
         /* =========================================
-           LOGIC RENDER
+           2. RENDER SISTEM
            ========================================= */
-        
-        // 1. Render Featured (Headline)
         function renderFeatured() {
-            const featured = dbBlog[0];
-            if(!featured) return;
+            if (typeof dbBlog === 'undefined' || dbBlog.length === 0) return;
+            const featured = dbBlog[0]; 
 
             const html = `
                 <div class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-gray-900 border border-gray-800 group shadow-2xl">
@@ -503,7 +353,6 @@
             document.getElementById('featured-container').innerHTML = html;
         }
 
-        // 2. Render List Grid
         function renderList(data = dbBlog.slice(1)) {
             const grid = document.getElementById('posts-grid');
             const empty = document.getElementById('empty-state');
@@ -517,6 +366,7 @@
             }
 
             data.forEach(post => {
+                const cuplikanTeks = post.isi.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...';
                 const card = `
                     <div class="blog-card bg-[#0a0a0a] rounded-xl overflow-hidden flex flex-col h-full cursor-pointer group" onclick="openArticle(${post.id})">
                         <div class="h-52 overflow-hidden relative">
@@ -533,7 +383,7 @@
                                 ${post.judul}
                             </h3>
                             <p class="text-sm text-gray-400 line-clamp-2 mb-4 leading-relaxed">
-                                ${post.isi.replace(/<[^>]*>?/gm, '').substring(0, 100)}...
+                                ${cuplikanTeks}
                             </p>
                             <div class="mt-auto pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-semibold text-gray-400">
                                 <div class="flex items-center gap-2">
@@ -549,10 +399,10 @@
             });
         }
 
-        // 3. Render Related Posts (Random)
         function renderRelated(currentId) {
+            if (typeof dbBlog === 'undefined') return;
             const container = document.getElementById('related-grid');
-            const related = dbBlog.filter(p => p.id !== currentId).slice(0, 3); // Ambil 3 artikel lain
+            const related = dbBlog.filter(p => p.id !== currentId).sort(() => 0.5 - Math.random()).slice(0, 3); 
             
             let html = '';
             related.forEach(post => {
@@ -569,15 +419,13 @@
             container.innerHTML = html;
         }
 
-        // 4. Handle Filter
         function handleFilter() {
+            if (typeof dbBlog === 'undefined') return;
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             const category = document.getElementById('categoryFilter').value;
 
             const filtered = dbBlog.filter(post => {
-                const matchSearch = post.judul.toLowerCase().includes(keyword) || 
-                                   post.penulis.toLowerCase().includes(keyword) ||
-                                   post.tags.some(tag => tag.toLowerCase().includes(keyword));
+                const matchSearch = post.judul.toLowerCase().includes(keyword) || post.penulis.toLowerCase().includes(keyword);
                 const matchCat = category === 'all' || post.kategori === category;
                 return matchSearch && matchCat;
             });
@@ -587,22 +435,14 @@
         document.getElementById('searchInput').addEventListener('keyup', handleFilter);
         document.getElementById('categoryFilter').addEventListener('change', handleFilter);
 
-        // 5. OPEN ARTICLE FUNCTION (SPA)
+        // OPEN ARTICLE (SPA)
         function openArticle(id) {
+            if (typeof dbBlog === 'undefined') return;
             const post = dbBlog.find(p => p.id === id);
             if(!post) return;
 
-            // Simpan data artikel saat ini
-            currentArticleId = id;
-            currentArticleTitle = post.judul;
+            window.location.hash = 'post-' + id;
 
-            // Update URL tanpa reload page
-            history.pushState(null, null, `#article=${id}`);
-
-            // Update title tab browser
-            document.title = `${post.judul} - ACENTRAL Blog`;
-
-            // Fill Data
             document.getElementById('detail-category').innerText = post.kategori;
             document.getElementById('detail-title').innerText = post.judul;
             document.getElementById('detail-author').innerText = post.penulis;
@@ -614,30 +454,68 @@
             document.getElementById('sidebar-avatar').src = post.avatar;
             document.getElementById('detail-avatar').src = post.avatar;
 
-            // Tags
             const tagContainer = document.getElementById('detail-tags');
             tagContainer.innerHTML = post.tags.map(t => `<span class="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded cursor-pointer hover:text-emas transition">#${t}</span>`).join('');
 
-            // Render Related
             renderRelated(id);
 
-            // Switch View
-            const list = document.getElementById('view-list');
-            const detail = document.getElementById('view-detail');
-            list.style.display = 'none';
-            detail.classList.remove('hidden');
+            document.getElementById('view-list').style.display = 'none';
+            document.getElementById('view-detail').classList.remove('hidden');
             window.scrollTo(0,0);
         }
 
         function closeArticle() {
+            history.pushState("", document.title, window.location.pathname + window.location.search);
             document.getElementById('view-detail').classList.add('hidden');
             document.getElementById('view-list').style.display = 'block';
-            // Reset URL saat kembali ke list
-            history.pushState(null, null, window.location.pathname);
-            // Reset title tab browser
-            document.title = 'ACENTRAL - Articles';
-            currentArticleId = null;
-            currentArticleTitle = '';
+        }
+
+        // --- FUNGSI SHARE MODAL ---
+        function openShareModal() {
+            const modal = document.getElementById('shareModal');
+            const linkText = document.getElementById('shareLinkText');
+            linkText.innerText = window.location.href;
+            modal.style.display = 'flex';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        function copyCurrentLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = document.getElementById('copyLinkBtn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Tersalin! ✓';
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('bg-green-600');
+                }, 2000);
+            });
+        }
+
+        function shareWhatsApp() {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://wa.me/?text=Baca artikel ini: ${url}`, '_blank');
+        }
+
+        function shareTwitter() {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank');
+        }
+
+        function shareFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        // Close modal on click outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('shareModal');
+            if (event.target == modal) {
+                closeShareModal();
+            }
         }
 
         // Reading Progress Bar
@@ -650,42 +528,19 @@
             }
         };
 
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', function() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#article=')) {
-                const id = parseInt(hash.split('=')[1]);
-                const post = dbBlog.find(p => p.id === id);
-                if (post) {
-                    openArticle(id);
-                }
-            } else {
-                closeArticle();
-            }
-        });
-
-        // Check for hash on page load
-        window.addEventListener('load', function() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#article=')) {
-                const id = parseInt(hash.split('=')[1]);
-                const post = dbBlog.find(p => p.id === id);
-                if (post) {
-                    openArticle(id);
-                }
-            }
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('shareModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeShareModal();
-            }
-        });
-
         // Initialize
-        renderFeatured();
-        renderList();
+        window.addEventListener('DOMContentLoaded', () => {
+            renderFeatured();
+            renderList();
+
+            const hash = window.location.hash;
+            if(hash && hash.startsWith('#post-')) {
+                const id = parseInt(hash.replace('#post-', ''));
+                if(!isNaN(id)) {
+                    openArticle(id);
+                }
+            }
+        });
 
     </script>
 </body>

@@ -4,7 +4,7 @@ const dbBlog = [
     judul: "Our 3rd Journey of Twenty Four: Perjalanan, Syukur, dan Kebersamaan ACENTRAL",
     penulis: "Divisi Kesenian",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Seni",
-    tanggal: "27 September 2025",
+    tanggal: "08 Februari 2026",
     kategori: "Event",
     thumbnail: "assets/jeteso/full asentral.JPG",
     readTime: "5 min read",
@@ -57,7 +57,7 @@ const dbBlog = [
                 judul: "Harmoni Santri ACENTRAL dalam Balutan Lagu “Akad“",
                 penulis: "Divisi publikasi",
                 avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Psi",
-                tanggal: "20 April 2024",
+                tanggal: "08 Februari 2026",
                 kategori: "Kreatif",
                 thumbnail: "assets/akad thumbnail.png",
                 readTime: "3 min read",
@@ -90,7 +90,9 @@ const dbBlog = [
                     <p>Dalam sesi podcast tersebut, Ukku berbagi tentang pengalaman masa santrinya di lingkungan Al-Zaytun — sebuah pesantren yang dikenal menanamkan nilai-nilai pendidikan yang luas, inklusif, dan berpikiran terbuka kepada para santrinya. Berangkat dari pengalaman itulah Ukku kemudian membawa perspektifnya ke dalam diskusi yang nggak kaku, tapi tetap sarat insight.</p>
                     <p>Gaya bicara yang santai dan mengalir membuat podcast ini cocok buat siapa saja yang ingin mendapatkan cerita inspiratif tanpa harus merasa “sedang belajar serius”. Pendekatan yang ringan tapi bermakna juga membuka kesempatan bagi pendengar, terutama generasi muda dan sesama alumni, untuk melihat bagaimana perjalanan hidup bisa terus berkembang setelah bangku pendidikan formal.</P>
                     <p>Podcast seperti ini bukan hanya soal entertain, tetapi juga menjadi sarana berbagi cerita yang memotivasi pendengar untuk terus berkarya. Cerita Ukku menjadi contoh nyata bahwa menjadi alumni pesantren bukan penghalang untuk berkiprah di dunia kreatif dan media, bahkan bisa jadi inspirasi buat banyak orang yang punya mimpi besar.</p>
-                    <p>Buat yang penasaran lebih jauh tentang isi percakapan di podcast ini, lo bisa nonton videonya di YouTube lewat link berikut: https://www.youtube.com/watch?v=WA0nf7G3CTM</p>
+                    <p>Buat yang penasaran lebih jauh tentang isi percakapan di podcast ini, lo bisa nonton videonya di YouTube lewat link berikut: <a href="https://www.youtube.com/watch?v=WA0nf7G3CTM" target="_blank" style="color: #FFD700; text-decoration: underline; font-weight: bold;">
+                    Klik Disini Untuk Nonton (YouTube)
+                    </a></p>
                     <p>Artikel ini bisa jadi awal dari rangkaian cerita tentang figur-figur inspiratif di lingkungan pesantren Al-Zaytun yang nggak hanya berkiprah di jalur akademik atau keagamaan, tapi juga di dunia konten dan komunikasi modern.</p>
                     `,
                 tags: ["Podcast", "News"]
