@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACENTRAL - Birthday Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { emas: '#FFD700', gelap: '#050505', abu: '#1a1a1a' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        .card-clean {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-clean:hover {
+            background: rgba(255, 215, 0, 0.05);
+            border-color: #FFD700;
+            transform: scale(1.02) translateY(-10px);
+            box-shadow: 0 20px 40px -10px rgba(255, 215, 0, 0.2);
+        }
+        .avatar-container {
+            position: relative; padding: 8px;
+            background: linear-gradient(45deg, #FFD700, #FDB931);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        .btn-ig {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-ig:hover { opacity: 0.9; transform: scale(1.05); }
+        .glow-text { text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+    </style>
+</head>
+<body>
+
+    <nav class="w-full py-6 px-8 flex justify-between items-center bg-gelap/80 backdrop-blur-lg sticky top-0 z-50 border-b border-white/5">
+        <a href="index.html" class="text-2xl font-black tracking-tighter text-white">A<span class="text-emas">CENTRAL.</span></a>
+        <a href="index.html" class="group flex items-center gap-2 text-sm font-semibold text-gray-400 hover:text-emas transition">
+            <i class="ri-arrow-left-line group-hover:-translate-x-1 transition"></i> Back to Home
+        </a>
+    </nav>
+
+    <main class="container mx-auto px-6 py-20 min-h-screen">
+        <div id="celebration-area" class="hidden text-center max-w-4xl mx-auto">
+            <div class="mb-16" data-aos="zoom-in">
+                <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-none mb-4 glow-text">HBD! 🎉</h1>
+                <p class="text-gray-400 tracking-[0.3em] uppercase text-sm">Angkatan Cahaya Emas Berbahagia</p>
+            </div>
+            <div id="birthday-grid" class="flex flex-wrap justify-center gap-8"></div>
+        </div>
+
+        <div id="no-birthday" class="hidden text-center py-20" data-aos="fade-up">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/5 border border-white/10 mb-8">
+                <i class="ri-calendar-event-line text-3xl text-gray-500"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-2">No Birthdays Today</h2>
+            <p class="text-gray-500 max-w-sm mx-auto">Stay tuned! We'll celebrate the next golden generation member soon.</p>
+        </div>
+    </main>
+
+    <script src="db_birthday.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        const folderFoto = "potomember/"; 
+        const extFoto = ".jpg";
+
+        const wishesCollection = [
+            "Happy Level Up <b>{name}</b>! 🚀 Honestly, semoga di umur segini makin <i>mindset</i>-nya growth, rezekinya <i>secure</i>, dan tetep jadi <i>support system</i> andalan kita.",
+            "HBD <b>{name}</b>! 🎉 Wish you <i>literally</i> all the best. Semoga makin <i>productive</i>, <i>financial freedom</i> makin deket, dan <i>less overthinking</i> ya!",
+            "Happy Birthday <b>{name}</b>! 🥳 <i>No cap</i>, lo keren banget sih bertahan sampe sini. <i>Keep grinding</i> tapi jangan lupa <i>healing</i> tipis-tipis biar tetep <i>sane</i>.",
+            "Selamat menua <b>{name}</b>! ✨ Semoga tahun ini isinya <i>good vibes only</i>. Jauh-jauh deh dari <i>toxic environment</i>. Sehat terus dan makin <i>glow up</i> mental fisiknya!",
+            "HBD <b>{name}</b>! 🎂 <i>Honestly</i> bangga banget liat <i>progress</i> lo. Semoga makin <i>achieve</i> target-targetnya dan tetep <i>humble</i>. <i>You rock!</i>"
+        ];
+
+        // KAMUS BULAN
+        const monthMap = {
+            'januari': '01', 'februari': '02', 'maret': '03', 'april': '04', 'mei': '05', 'juni': '06',
+            'juli': '07', 'agustus': '08', 'september': '09', 'oktober': '10', 'november': '11', 'desember': '12',
+            'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04', 'may': '05', 'jun': '06',
+            'jul': '07', 'aug': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12', 'agu': '08', 'agt': '08'
+        };
+
+        function isBirthdayToday(dateString) {
+            if (!dateString) return false;
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth() + 1;
+
+            // Pecah berdasarkan / atau - atau spasi
+            const parts = dateString.split(/[\/\-\s]+/);
+            if (parts.length < 2) return false;
+
+            // LOGIKA INDONESIA: Angka Pertama = Tanggal, Angka Kedua = Bulan
+            const dayData = parseInt(parts[0]); 
+            let monthDataRaw = parts[1].toLowerCase();
+            let monthData = 0;
+
+            if (!isNaN(monthDataRaw)) { monthData = parseInt(monthDataRaw); } 
+            else { if (monthMap[monthDataRaw]) { monthData = parseInt(monthMap[monthDataRaw]); } }
+
+            return (dayData === currentDay && monthData === currentMonth);
+        }
+
+        function checkBirthday() {
+            if (typeof dbBirthday === 'undefined') return;
+
+            // CEK PAKAI KEY YANG SESUAI JSON LU ("TANGGAL")
+            const celebrants = dbBirthday.filter(m => isBirthdayToday(m["TANGGAL"]));
+
+            if (celebrants.length > 0) {
+                renderCelebrants(celebrants);
+                document.getElementById('celebration-area').classList.remove('hidden');
+                launchConfetti();
+            } else {
+                document.getElementById('no-birthday').classList.remove('hidden');
+            }
+        }
+
+        function renderCelebrants(list) {
+            const container = document.getElementById('birthday-grid');
+            
+            container.innerHTML = list.map(orang => {
+                let randomWish = wishesCollection[Math.floor(Math.random() * wishesCollection.length)];
+                
+                // AMBIL DATA DARI KEY HURUF GEDE ("PANGGILAN", "NAMA", "NO INDUK")
+                let personalWish = randomWish.replace(/{name}/g, orang["PANGGILAN"]);
+                const photoPath = `${folderFoto}${orang["NO INDUK"]}${extFoto}`;
+
+                return `
+                <div class="card-clean p-8 w-full md:w-[350px] relative overflow-hidden group">
+                    <div class="absolute -top-12 -right-12 w-32 h-32 bg-emas/10 rounded-full blur-3xl group-hover:bg-emas/20 transition"></div>
+                    <div class="flex flex-col items-center">
+                        <div class="avatar-container mb-6">
+                            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gelap">
+                                <img src="${photoPath}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" 
+                                     onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=${orang["NAMA"]}'">
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-center text-white mb-1 leading-tight">${orang["NAMA"]}</h3>
+                        <span class="text-emas text-[10px] font-bold tracking-[0.2em] uppercase mb-6 px-3 py-1 bg-emas/10 rounded-full mt-2">
+                            Golden Member
+                        </span>
+                        <p class="text-gray-400 text-sm text-center leading-relaxed italic mb-8">"${personalWish}"</p>
+                        <div class="flex flex-col w-full gap-3">
+                            <button onclick="shareToIG('${orang["PANGGILAN"]}')" class="btn-ig flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold text-sm shadow-lg">
+                                <i class="ri-instagram-line text-lg"></i> Post to IG Story
+                            </button>
+                            <a href="https://wa.me/?text=${encodeURIComponent(personalWish.replace(/<[^>]*>?/gm, ''))}%20%F0%9F%8E%89" target="_blank" 
+                               class="flex items-center justify-center gap-2 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white/10 transition">
+                                <i class="ri-whatsapp-line text-lg text-green-500"></i> Send Wish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function shareToIG(nama) {
+            const igAccount = "acentral.official"; 
+            const text = `Happy Level Up ${nama}! 🔥 @${igAccount}`;
+            window.location.href = `instagram://library?AssetPath=null&InstagramCaption=${encodeURIComponent(text)}`;
+            setTimeout(() => { window.open(`https://www.instagram.com/reels/create/`, '_blank'); }, 500);
+        }
+
+        function launchConfetti() {
+            const end = Date.now() + 3000;
+            const colors = ['#FFD700', '#ffffff'];
+            (function frame() {
+                confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        window.addEventListener('DOMContentLoaded', checkBirthday);
+    </script>
+</body>
+</html>
