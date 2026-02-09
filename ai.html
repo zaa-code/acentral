@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ACENTRAL - AI Gyro</title>
+    <title>ACENTRAL - AI Motion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -16,13 +16,13 @@
                     colors: { emas: '#FFD700', emasDark: '#C5A000', iosDark: '#000000', iosGray: '#1C1C1E', iosBlue: '#0A84FF' },
                     animation: {
                         'slide-up': 'slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
-                        'scale-in': 'scaleIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
                         'float': 'float 10s ease-in-out infinite',
+                        'float-reverse': 'floatReverse 12s ease-in-out infinite',
                     },
                     keyframes: {
                         slideUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
-                        scaleIn: { '0%': { opacity: 0, transform: 'scale(0.95)' }, '100%': { opacity: 1, transform: 'scale(1)' } },
-                        float: { '0%, 100%': { transform: 'translate(0, 0)' }, '50%': { transform: 'translate(-20px, 20px)' } }
+                        float: { '0%, 100%': { transform: 'translate(0, 0)' }, '50%': { transform: 'translate(-20px, 20px)' } },
+                        floatReverse: { '0%, 100%': { transform: 'translate(0, 0)' }, '50%': { transform: 'translate(20px, -20px)' } }
                     }
                 }
             }
@@ -32,32 +32,36 @@
         body { background-color: #000; color: white; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        /* GYRO PARALLAX BACKGROUND */
-        #parallax-container {
+        /* BACKGROUND PARALLAX (Z-INDEX PALING BELAKANG) */
+        #bg-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden; pointer-events: none;
+            z-index: 0; overflow: hidden; pointer-events: none;
         }
-        .parallax-layer {
-            position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
-            transition: transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform;
-        }
-        
-        /* Sidebar Fix Solid */
-        .sidebar-container {
-            background-color: #050505; 
-            border: 1px solid #222;    
-            border-right: 1px solid #333;
-            box-shadow: 5px 0 30px rgba(0,0,0,0.5); 
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
+            transition: transform 0.1s linear; /* Smooth movement */
         }
 
-        .glass-panel { background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .modal-overlay { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); transition: opacity 0.3s ease; }
+        /* SIDEBAR SOLID */
+        .sidebar-container {
+            background-color: #050505; 
+            border-right: 1px solid #222;
+            z-index: 50; /* Di atas background */
+        }
+
+        .glass-panel { 
+            background: rgba(20, 20, 20, 0.8); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
         
-        /* CHAT BUBBLES */
+        .modal-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); transition: opacity 0.3s ease; }
+        
         .msg-user { 
             background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); color: #000; font-weight: 600; 
             border-radius: 20px 20px 4px 20px; padding: 12px 18px; max-width: 85%; 
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15); font-size: 0.95rem; animation: slideUp 0.3s ease; 
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2); font-size: 0.95rem; animation: slideUp 0.3s ease; 
         }
         .msg-bot { 
             background: #1C1C1E; color: #E5E5EA; border-radius: 20px 20px 20px 4px; 
@@ -65,12 +69,9 @@
             border: 1px solid rgba(255,255,255,0.05); animation: slideUp 0.3s ease; 
         }
         
-        /* SIDEBAR ITEM */
         .sidebar-item { 
-            padding: 12px 16px; margin-bottom: 6px; border-radius: 16px; 
-            transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
-            display: flex; justify-content: space-between; align-items: center;
-            background: transparent;
+            padding: 12px 16px; margin-bottom: 6px; border-radius: 12px; 
+            transition: all 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         .sidebar-item:hover { background: #1a1a1a; }
         .sidebar-item.active { background: #1f1f1f; border: 1px solid #FFD700; }
@@ -79,8 +80,8 @@
         .sidebar-actions { display: none; gap: 8px; }
         .sidebar-item:hover .sidebar-actions, .sidebar-item.active .sidebar-actions { display: flex; }
 
-        .widget-card { background: rgba(44, 44, 46, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 16px; transition: all 0.3s; cursor: pointer; }
-        .widget-card:hover { transform: scale(1.02); background: rgba(58, 58, 60, 0.8); border-color: #FFD700; }
+        .widget-card { background: rgba(30, 30, 30, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 16px; transition: all 0.3s; cursor: pointer; }
+        .widget-card:hover { transform: scale(1.02); background: rgba(50, 50, 50, 0.8); border-color: #FFD700; }
         
         .typing-dot { width: 5px; height: 5px; background: #8E8E93; border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; margin: 0 2px; }
         .typing-dot:nth-child(1) { animation-delay: -0.32s; } .typing-dot:nth-child(2) { animation-delay: -0.16s; }
@@ -89,25 +90,19 @@
         .input-disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
     </style>
 </head>
-<body class="flex flex-row font-sans selection:bg-emas selection:text-black">
+<body class="flex flex-row font-sans selection:bg-emas selection:text-black" onmousemove="parallax(event)" ontouchmove="parallaxMobile(event)">
 
     <script src="db_birthday.js"></script>
 
-    <div id="parallax-container">
-        <div class="parallax-layer" data-depth="0.05">
-            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-        </div>
+    <div id="bg-container">
+        <div class="orb bg-emas w-96 h-96 top-[-50px] left-[-50px] animate-float" data-speed="2"></div>
         
-        <div class="parallax-layer flex items-center justify-center" data-depth="0.15">
-            <div class="w-[600px] h-[600px] bg-emas/10 rounded-full blur-[120px] mix-blend-screen translate-y-[-50px] translate-x-[-50px]"></div>
-        </div>
-
-        <div class="parallax-layer flex items-center justify-center" data-depth="0.25">
-            <div class="w-[300px] h-[300px] bg-yellow-600/20 rounded-full blur-[80px] translate-y-[200px] translate-x-[200px]"></div>
-        </div>
+        <div class="orb bg-blue-900 w-[500px] h-[500px] bottom-[-100px] right-[-100px] animate-float-reverse" data-speed="-2"></div>
+        
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
     </div>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-black z-50 flex flex-col transition-transform duration-300 ease-out transform -translate-x-full md:translate-x-0 md:bg-transparent">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 z-50 flex flex-col transition-transform duration-300 ease-out transform -translate-x-full md:translate-x-0">
         <div class="h-full md:py-4 md:pl-4">
             <div class="sidebar-container h-full w-full md:rounded-[2.5rem] flex flex-col overflow-hidden relative">
                 <div class="p-6 flex items-center justify-between border-b border-white/5">
@@ -118,7 +113,7 @@
                     </div>
                 </div>
                 <div id="history-list" class="flex-1 overflow-y-auto px-4 pb-4 space-y-1 py-4"></div>
-                <div class="p-4 border-t border-white/5 bg-[#0a0a0a]">
+                <div class="p-4 border-t border-white/5 bg-[#050505]">
                     <a href="index.html" class="flex items-center gap-3 p-3 rounded-2xl bg-[#151515] hover:bg-[#202020] transition group border border-white/5">
                         <div class="w-8 h-8 rounded-full bg-black border border-gray-600 flex items-center justify-center group-hover:border-emas transition"><i class="ri-home-4-fill text-gray-400 group-hover:text-emas"></i></div>
                         <div><p class="text-sm font-semibold text-white">Back to Web</p><p class="text-[10px] text-gray-500">ACENTRAL Home</p></div>
@@ -130,8 +125,7 @@
 
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <main class="flex-1 flex flex-col h-full w-full relative md:ml-80">
-        
+    <main class="flex-1 flex flex-col h-full w-full relative md:ml-80 z-10">
         <header class="absolute top-4 left-0 right-0 z-30 flex justify-center pointer-events-none">
             <div class="glass-panel px-5 py-2 rounded-full flex items-center gap-3 pointer-events-auto shadow-2xl">
                 <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white mr-1"><i class="ri-menu-4-line text-xl"></i></button>
@@ -172,39 +166,18 @@
     <div id="delete-modal" class="fixed inset-0 z-[100] hidden items-center justify-center"><div class="modal-overlay absolute inset-0" onclick="closeModals()"></div><div class="glass-panel relative w-80 p-6 rounded-3xl shadow-2xl animate-scale-in text-center"><div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4"><i class="ri-delete-bin-line text-3xl text-red-500"></i></div><h3 class="text-white font-bold text-lg mb-2">Hapus Chat?</h3><p class="text-gray-400 text-sm mb-6">Yakin mau hapus? History ini gak bisa dibalikin lagi lho.</p><div class="flex gap-3"><button onclick="closeModals()" class="flex-1 py-3 rounded-xl bg-[#2C2C2E] text-gray-300 font-medium hover:bg-[#3C3C3E] transition">Batal</button><button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition">Hapus</button></div></div></div>
 
     <script>
-        // GYRO & MOUSE PARALLAX EFFECT
-        document.addEventListener('mousemove', (e) => {
-            const layers = document.querySelectorAll('.parallax-layer');
-            const x = (window.innerWidth - e.pageX * 2) / 100;
-            const y = (window.innerHeight - e.pageY * 2) / 100;
-
-            layers.forEach(layer => {
-                const speed = layer.getAttribute('data-depth');
-                const xOffset = x * speed * 50;
-                const yOffset = y * speed * 50;
-                layer.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+        // --- ANIMASI BACKGROUND PARALLAX ---
+        function parallax(e) {
+            const orbs = document.querySelectorAll('.orb');
+            orbs.forEach(orb => {
+                const speed = orb.getAttribute('data-speed');
+                const x = (window.innerWidth - e.pageX * speed) / 100;
+                const y = (window.innerHeight - e.pageY * speed) / 100;
+                orb.style.transform = `translateX(${x}px) translateY(${y}px)`;
             });
-        });
+        }
 
-        // GYRO FOR MOBILE (Optional: Will work if permission granted/supported)
-        window.addEventListener('deviceorientation', (e) => {
-            const layers = document.querySelectorAll('.parallax-layer');
-            const x = e.gamma; // -90 to 90
-            const y = e.beta;  // -180 to 180
-            
-            // Limit tilt effect
-            const tiltX = Math.min(Math.max(x, -20), 20);
-            const tiltY = Math.min(Math.max(y, -20), 20);
-
-            layers.forEach(layer => {
-                const speed = layer.getAttribute('data-depth');
-                const xOffset = tiltX * speed * 2;
-                const yOffset = tiltY * speed * 2;
-                layer.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-            });
-        });
-
-        // DATA STRUKTUR
+        // --- DATA & LOGIC LAINNYA ---
         const dataStruktur = {
             "Ketua Angkatan": "Muhammad Nazir",
             "Wakil 1": "Wilma Bantani",
