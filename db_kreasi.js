@@ -75,9 +75,18 @@ videos: [
         {
             judul: "Cek Jodoh",
             kategori: "Hiburan",
-            deskripsi: "Siapa nih yg lagi cari jodoh?? bisa banget loh kalian cek jodoh kalian disni, ayok cek sekarang!!",
+            deskripsi: "Siapa nih yang lagi ragu buat liat jodoh?? bisa banget loh kalian cek jodoh kalian disni, ayok cek sekarang!!",
             cover: "assets/cek jodoh.png", // Screenshot Web
             fileUrl: "cek-jodoh.html", // Link Demo
+            creator: "Reza A",
+            tipe: "project" // Menandakan ini project/app
+        },
+                {
+            judul: "Cari Jodoh",
+            kategori: "Hiburan",
+            deskripsi: "Siapa nih yg lagi cari jodoh?? bisa banget loh kalian cek jodoh kalian disni, ayok cek sekarang!!",
+            cover: "assets/cari jodoh.png", // Screenshot Web
+            fileUrl: "cari-jodoh.html", // Link Demo
             creator: "Reza A",
             tipe: "project" // Menandakan ini project/app
         },
