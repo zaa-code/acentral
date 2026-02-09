@@ -30,12 +30,12 @@
         body { background-color: #000; color: white; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        /* SIDEBAR STYLE (FLOATING & VISIBLE) */
+        /* SIDEBAR STYLE */
         .sidebar-container {
-            background-color: #0a0a0a; /* Hitam abu dikit biar keliatan */
-            border: 1px solid #222;    /* Garis pinggir biar tegas */
+            background-color: #0a0a0a; 
+            border: 1px solid #222;    
             border-right: 1px solid #333;
-            box-shadow: 5px 0 30px rgba(0,0,0,0.5); /* Bayangan */
+            box-shadow: 5px 0 30px rgba(0,0,0,0.5); 
         }
 
         .glass-panel { background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); }
@@ -77,6 +77,14 @@
         .bg-blob { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0) 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
 
         .input-disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
+
+        /* --- LOGIC TOGGLE SIDEBAR --- */
+        /* Ketika class 'sidebar-closed' ada di body: */
+        body.sidebar-closed #sidebar { transform: translateX(-100%); } /* Sidebar geser ke kiri */
+        body.sidebar-closed main { margin-left: 0; } /* Main content geser ke kiri (full width) */
+        body.sidebar-closed #main-toggle-btn { display: block; } /* Tombol menu di main muncul */
+        
+        /* Mobile Specific: Sidebar always hidden by default transform logic, handled by JS toggle */
     </style>
 </head>
 <body class="flex flex-row font-sans selection:bg-emas selection:text-black">
@@ -87,19 +95,21 @@
         <div class="h-full md:py-4 md:pl-4">
             <div class="sidebar-container h-full w-full md:rounded-[2.5rem] flex flex-col overflow-hidden relative">
                 
-                <div class="p-6 flex items-center justify-between border-b border-white/5">
-                    <h2 class="text-2xl font-bold tracking-tight text-white">History</h2>
-                    <div class="flex gap-2">
-                        <button onclick="createNewChat()" class="w-9 h-9 rounded-full bg-[#2C2C2E] text-emas flex items-center justify-center hover:bg-[#3C3C3E] transition shadow-lg"><i class="ri-add-line text-xl"></i></button>
-                        <button onclick="toggleSidebar()" class="md:hidden w-9 h-9 rounded-full bg-[#2C2C2E] text-gray-400 flex items-center justify-center"><i class="ri-close-line text-xl"></i></button>
-                    </div>
+                <div class="px-6 pt-6 pb-4 flex justify-between items-center bg-[#0a0a0a]">
+                    <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white transition p-2 hover:bg-[#1a1a1a] rounded-lg" title="Tutup Sidebar">
+                        <i class="ri-menu-line text-xl"></i>
+                    </button>
+
+                    <button onclick="createNewChat()" class="text-gray-400 hover:text-emas transition p-2 hover:bg-[#1a1a1a] rounded-lg" title="Chat Baru">
+                        <i class="ri-edit-box-line text-xl"></i>
+                    </button>
                 </div>
 
-                <div id="history-list" class="flex-1 overflow-y-auto px-4 pb-4 space-y-1 py-4"></div>
+                <div id="history-list" class="flex-1 overflow-y-auto px-4 pb-4 space-y-1 py-2"></div>
 
                 <div class="p-4 border-t border-white/5 bg-[#0a0a0a]">
                     <a href="index.html" class="flex items-center gap-3 p-3 rounded-2xl bg-[#151515] hover:bg-[#202020] transition group border border-white/5">
-                        <div class="w-8 h-8 rounded-full bg-black border border-gray-600 flex items-center justify-center group-hover:border-emas transition"><i class="ri-home-4-fill text-gray-400 group-hover:text-emas"></i></div>
+                        <div class="w-8 h-8 rounded-full bg-black border border-gray-700 flex items-center justify-center group-hover:border-emas transition"><i class="ri-home-4-fill text-gray-400 group-hover:text-emas"></i></div>
                         <div><p class="text-sm font-semibold text-white">Back to Web</p><p class="text-[10px] text-gray-500">ACENTRAL Home</p></div>
                     </a>
                 </div>
@@ -109,12 +119,16 @@
 
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <main class="flex-1 flex flex-col h-full w-full relative md:ml-80 bg-black">
+    <main class="flex-1 flex flex-col h-full w-full relative md:ml-80 transition-all duration-300 bg-black">
         <div class="bg-blob"></div>
         
         <header class="absolute top-4 left-0 right-0 z-30 flex justify-center pointer-events-none">
             <div class="glass-panel px-5 py-2 rounded-full flex items-center gap-3 pointer-events-auto shadow-2xl">
-                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white mr-1"><i class="ri-menu-4-line text-xl"></i></button>
+                
+                <button id="main-toggle-btn" onclick="toggleSidebar()" class="text-gray-400 hover:text-white mr-1 md:hidden">
+                    <i class="ri-menu-line text-xl"></i>
+                </button>
+
                 <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <span class="text-sm font-semibold tracking-wide text-white">ACENTRAL <span class="text-emas">AI</span></span>
                 <button onclick="openDeleteModal(null, 'ALL')" class="ml-2 text-gray-500 hover:text-red-500 text-xs flex items-center gap-1" title="Clear All">
@@ -188,11 +202,32 @@
         const renameModal = document.getElementById('rename-modal');
         const deleteModal = document.getElementById('delete-modal');
         const renameInput = document.getElementById('rename-input');
+        const mainToggleBtn = document.getElementById('main-toggle-btn');
 
         let chats = JSON.parse(localStorage.getItem('acentral_chats')) || [];
         let activeChatId = null;
         let targetChatId = null;
 
+        // --- TOGGLE SIDEBAR LOGIC (Unified Desktop & Mobile) ---
+        function toggleSidebar() {
+            // Cek apakah di Mobile (< 768px)
+            if (window.innerWidth < 768) {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            } else {
+                // Desktop Mode: Toggle class di Body
+                document.body.classList.toggle('sidebar-closed');
+                
+                // Toggle tombol menu di header utama
+                if (document.body.classList.contains('sidebar-closed')) {
+                    mainToggleBtn.classList.remove('md:hidden');
+                } else {
+                    mainToggleBtn.classList.add('md:hidden');
+                }
+            }
+        }
+
+        // --- DISABLE INPUT ---
         function toggleInput(state) {
             if (state === 'disable') {
                 userInput.disabled = true;
@@ -206,6 +241,7 @@
             }
         }
 
+        // --- LOGIC ULTAH ---
         function getTodayBirthdayInfo() {
             if (typeof dbBirthday === 'undefined') return "Tidak ada data ulang tahun.";
             const today = new Date();
@@ -226,6 +262,7 @@
             return "Hari ini TIDAK ADA yang ulang tahun.";
         }
 
+        // --- SYSTEM PROMPT ---
         function getSystemPrompt() {
             const todayBirthdayInfo = getTodayBirthdayInfo();
             const strukturText = Object.entries(dataStruktur).map(([jabatan, nama]) => `- ${jabatan}: ${nama}`).join("\n");
@@ -237,6 +274,7 @@
             if (chats.length > 0) { loadChat(chats[0].id); } else { createNewChat(); }
         });
 
+        // --- SIDEBAR & HISTORY LOGIC ---
         function renderHistorySidebar() {
             historyListEl.innerHTML = '';
             if (chats.length === 0) { historyListEl.innerHTML = '<div class="text-center mt-10"><i class="ri-chat-1-line text-gray-700 text-3xl"></i><p class="text-xs text-gray-700 mt-2">No history</p></div>'; return; }
@@ -251,9 +289,40 @@
             });
         }
 
-        function createNewChat() { activeChatId = Date.now(); const newChat = { id: activeChatId, title: "New Chat", messages: [], createdAt: new Date().toISOString() }; chats.unshift(newChat); saveData(); welcomeScreen.style.display = 'flex'; messagesList.classList.add('hidden'); messagesList.innerHTML = ''; renderHistorySidebar(); if(window.innerWidth < 768) toggleSidebar(); toggleInput('enable'); }
-        function loadChat(id) { activeChatId = id; const chat = chats.find(c => c.id === id); if (!chat) return; messagesList.innerHTML = ''; if (chat.messages.length === 0) { welcomeScreen.style.display = 'flex'; messagesList.classList.add('hidden'); } else { welcomeScreen.style.display = 'none'; messagesList.classList.remove('hidden'); chat.messages.forEach(msg => renderBubble(msg)); } renderHistorySidebar(); setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100); if(window.innerWidth < 768) { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); } toggleInput('enable'); }
-        function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); sidebarOverlay.classList.toggle('hidden'); }
+        function createNewChat() { 
+            activeChatId = Date.now(); 
+            const newChat = { id: activeChatId, title: "New Chat", messages: [], createdAt: new Date().toISOString() }; 
+            chats.unshift(newChat); 
+            saveData(); 
+            welcomeScreen.style.display = 'flex'; 
+            messagesList.classList.add('hidden'); 
+            messagesList.innerHTML = ''; 
+            renderHistorySidebar(); 
+            // Close sidebar on mobile when creating new chat
+            if(window.innerWidth < 768) { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); }
+            toggleInput('enable'); 
+        }
+
+        function loadChat(id) { 
+            activeChatId = id; 
+            const chat = chats.find(c => c.id === id); 
+            if (!chat) return; 
+            messagesList.innerHTML = ''; 
+            if (chat.messages.length === 0) { 
+                welcomeScreen.style.display = 'flex'; 
+                messagesList.classList.add('hidden'); 
+            } else { 
+                welcomeScreen.style.display = 'none'; 
+                messagesList.classList.remove('hidden'); 
+                chat.messages.forEach(msg => renderBubble(msg)); 
+            } 
+            renderHistorySidebar(); 
+            setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100); 
+            // Close sidebar on mobile
+            if(window.innerWidth < 768) { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); }
+            toggleInput('enable'); 
+        }
+
         function saveData() { localStorage.setItem('acentral_chats', JSON.stringify(chats)); }
         
         function openRenameModal(e, id) { if(e) e.stopPropagation(); targetChatId = id; const chat = chats.find(c => c.id === id); renameInput.value = chat.title; renameModal.classList.remove('hidden'); renameModal.classList.add('flex'); renameInput.focus(); }
@@ -342,6 +411,8 @@
             messagesList.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
+
+        function removeTyping() { const el = document.getElementById('typing-indicator'); if (el) el.remove(); }
 
         userInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; if(this.value === '') this.style.height = 'auto'; });
         userInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatForm.dispatchEvent(new Event('submit')); } });
