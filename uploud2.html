@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>ACENTRAL - Modern Editor</title>
+    <style>
+        :root { --accent: #f2c94c; --bg: #0d0d0d; --card: #1a1a1a; --text: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 40px; }
+        
+        .editor-container { width: 100%; max-width: 800px; }
+        .header-input { background: transparent; border: none; border-left: 4px solid var(--accent); color: white; font-size: 2.5rem; font-weight: bold; width: 100%; outline: none; padding-left: 20px; margin-bottom: 40px; }
+        
+        .row-item { position: relative; margin-bottom: 10px; group; display: flex; align-items: flex-start; gap: 10px; }
+        .controls { display: flex; opacity: 0; transition: 0.2s; }
+        .row-item:hover .controls { opacity: 1; }
+        
+        .btn-type { background: #333; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        .btn-type:hover { background: var(--accent); color: black; }
+        .btn-del { background: #442222; color: #ff5555; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+
+        .input-field { background: #151515; border: 1px solid #222; color: white; padding: 12px; width: 100%; border-radius: 8px; font-size: 16px; outline: none; }
+        .input-field:focus { border-color: var(--accent); }
+        .img-preview { max-width: 100px; border-radius: 5px; margin-top: 5px; display: none; }
+
+        .save-bar { position: fixed; bottom: 20px; right: 20px; background: var(--card); padding: 15px; border-radius: 50px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .btn-save { background: var(--accent); color: black; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="editor-container">
+    <input type="text" id="post-title" class="header-input" placeholder="Judul Artikel...">
+    
+    <div id="editor-rows">
+        </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <button class="btn-type" onclick="addRow('text')">+ Baris Teks</button>
+        <button class="btn-type" onclick="addRow('image')">+ Baris Gambar</button>
+    </div>
+</div>
+
+<div class="save-bar">
+    <button class="btn-save" onclick="collectData()">Publikasikan Artikel</button>
+</div>
+
+<script>
+    const editorRows = document.getElementById('editor-rows');
+
+    function addRow(type = 'text', value = '') {
+        const rowId = 'row-' + Date.now();
+        const row = document.createElement('div');
+        row.className = 'row-item';
+        row.id = rowId;
+
+        let inputHtml = '';
+        if (type === 'text') {
+            inputHtml = `<textarea class="input-field content-val" data-type="text" placeholder="Tulis sesuatu..." rows="2">${value}</textarea>`;
+        } else {
+            inputHtml = `
+                <div style="width: 100%">
+                    <input type="text" class="input-field content-val" data-type="image" placeholder="Paste URL Gambar di sini..." oninput="updatePreview(this)" value="${value}">
+                    <img src="${value}" class="img-preview">
+                </div>`;
+        }
+
+        row.innerHTML = `
+            <div class="controls">
+                <button class="btn-del" onclick="document.getElementById('${rowId}').remove()">✕</button>
+            </div>
+            ${inputHtml}
+        `;
+        
+        editorRows.appendChild(row);
+        if(type === 'image' && value) updatePreview(row.querySelector('input'));
+    }
+
+    function updatePreview(input) {
+        const img = input.nextElementSibling;
+        if (input.value) {
+            img.src = input.value;
+            img.style.display = 'block';
+        } else {
+            img.style.display = 'none';
+        }
+    }
+
+    function collectData() {
+        const title = document.getElementById('post-title').value;
+        const rows = document.querySelectorAll('.content-val');
+        const contentArray = [];
+
+        rows.forEach(row => {
+            contentArray.push({
+                type: row.getAttribute('data-type'),
+                content: row.value
+            });
+        });
+
+        const finalPayload = { title, body: contentArray };
+        console.log("Data siap kirim ke Backend:", JSON.stringify(finalPayload, null, 2));
+        alert("Data berhasil di-generate! Cek Console (F12)");
+    }
+
+    // Default: Kasih 1 baris teks pas buka
+    addRow('text');
+</script>
+
+</body>
+</html>

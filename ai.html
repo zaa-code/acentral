@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ACENTRAL - AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] },
+                    colors: { emas: '#FFD700', emasDark: '#C5A000', iosDark: '#000000', iosGray: '#1C1C1E', iosBlue: '#0A84FF' },
+                    animation: {
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'scale-in': 'scaleIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                    },
+                    keyframes: {
+                        slideUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+                        scaleIn: { '0%': { opacity: 0, transform: 'scale(0.95)' }, '100%': { opacity: 1, transform: 'scale(1)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #000; color: white; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        /* GLASS & IOS STYLES */
+        .glass-panel { background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .sidebar-glass { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .modal-overlay { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); transition: opacity 0.3s ease; }
+        
+        /* CHAT BUBBLES */
+        .msg-user { 
+            background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); color: #000; font-weight: 600; 
+            border-radius: 20px 20px 4px 20px; padding: 12px 18px; max-width: 85%; 
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15); font-size: 0.95rem; animation: slideUp 0.3s ease; 
+        }
+        .msg-bot { 
+            background: #1C1C1E; color: #E5E5EA; border-radius: 20px 20px 20px 4px; 
+            padding: 14px 20px; max-width: 90%; line-height: 1.6; font-size: 0.95rem; 
+            border: 1px solid rgba(255,255,255,0.05); animation: slideUp 0.3s ease; 
+        }
+        
+        /* SIDEBAR ITEM */
+        .sidebar-item { 
+            padding: 12px 16px; margin-bottom: 6px; border-radius: 20px; 
+            transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .sidebar-item:hover { background: rgba(255,255,255,0.08); }
+        .sidebar-item.active { background: rgba(255, 215, 0, 0.15); border: 1px solid rgba(255, 215, 0, 0.2); }
+        .sidebar-item.active span { color: #FFD700; font-weight: 600; }
+        
+        .sidebar-actions { display: none; gap: 8px; }
+        .sidebar-item:hover .sidebar-actions, .sidebar-item.active .sidebar-actions { display: flex; }
+
+        .widget-card { background: rgba(44, 44, 46, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 16px; transition: all 0.3s; cursor: pointer; }
+        .widget-card:hover { transform: scale(1.02); background: rgba(58, 58, 60, 0.8); border-color: #FFD700; }
+        
+        .typing-dot { width: 5px; height: 5px; background: #8E8E93; border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; margin: 0 2px; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; } .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+        
+        .bg-blob { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0) 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
+    </style>
+</head>
+<body class="flex flex-row font-sans selection:bg-emas selection:text-black">
+
+    <script src="db_birthday.js"></script>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-black z-50 flex flex-col transition-transform duration-300 ease-out transform -translate-x-full md:translate-x-0 md:bg-transparent">
+        <div class="h-full md:py-4 md:pl-4">
+            <div class="sidebar-glass h-full w-full md:rounded-[2.5rem] flex flex-col overflow-hidden relative">
+                
+                <div class="p-6 flex items-center justify-between">
+                    <h2 class="text-2xl font-bold tracking-tight text-white">History</h2>
+                    <div class="flex gap-2">
+                        <button onclick="createNewChat()" class="w-9 h-9 rounded-full bg-[#2C2C2E] text-emas flex items-center justify-center hover:bg-[#3C3C3E] transition shadow-lg"><i class="ri-add-line text-xl"></i></button>
+                        <button onclick="toggleSidebar()" class="md:hidden w-9 h-9 rounded-full bg-[#2C2C2E] text-gray-400 flex items-center justify-center"><i class="ri-close-line text-xl"></i></button>
+                    </div>
+                </div>
+
+                <div id="history-list" class="flex-1 overflow-y-auto px-4 pb-4 space-y-1"></div>
+
+                <div class="p-4 border-t border-white/5">
+                    <a href="index.html" class="flex items-center gap-3 p-3 rounded-2xl bg-[#2C2C2E] hover:bg-[#3C3C3E] transition group">
+                        <div class="w-8 h-8 rounded-full bg-black border border-gray-600 flex items-center justify-center group-hover:border-emas transition"><i class="ri-home-4-fill text-gray-400 group-hover:text-emas"></i></div>
+                        <div><p class="text-sm font-semibold text-white">Back to Web</p><p class="text-[10px] text-gray-500">ACENTRAL Home</p></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <main class="flex-1 flex flex-col h-full w-full relative md:ml-80 bg-black">
+        <div class="bg-blob"></div>
+        
+        <header class="absolute top-4 left-0 right-0 z-30 flex justify-center pointer-events-none">
+            <div class="glass-panel px-5 py-2 rounded-full flex items-center gap-3 pointer-events-auto shadow-2xl">
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white mr-1"><i class="ri-menu-4-line text-xl"></i></button>
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-sm font-semibold tracking-wide text-white">ACENTRAL <span class="text-emas">AI</span></span>
+                <button onclick="openDeleteModal(null, 'ALL')" class="ml-2 text-gray-500 hover:text-red-500 text-xs flex items-center gap-1" title="Clear All">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
+            </div>
+        </header>
+
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:px-20 pb-40 pt-28 scroll-smooth">
+            <div id="welcome-screen" class="flex flex-col items-center justify-center h-full animate-scale-in">
+                <div class="w-24 h-24 mb-6">
+                    <img src="logo.png" class="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(255,215,0,0.3)]" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
+                </div>
+                
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 text-center">Hello, Member.</h1>
+                <p class="text-gray-500 mb-8 text-center max-w-md text-sm">Personal Assistant for ACENTRAL Generation.</p>
+                
+                <div class="grid grid-cols-2 gap-3 w-full max-w-lg">
+                    <div class="widget-card" onclick="sendSuggestion('Siapa ketua angkatan?')"><i class="ri-user-star-fill text-emas text-xl mb-2"></i><p class="font-bold text-sm text-white">Struktur</p><p class="text-[10px] text-gray-400">Siapa ketua kita?</p></div>
+                    <div class="widget-card" onclick="sendSuggestion('Siapa Sekretaris?')"><i class="ri-booklet-fill text-blue-500 text-xl mb-2"></i><p class="font-bold text-sm text-white">Sekretaris</p><p class="text-[10px] text-gray-400">Cek Sekretaris</p></div>
+                    <div class="widget-card" onclick="sendSuggestion('Ada yang ultah hari ini?')"><i class="ri-cake-2-fill text-pink-500 text-xl mb-2"></i><p class="font-bold text-sm text-white">Birthday</p><p class="text-[10px] text-gray-400">Cek ulang tahun</p></div>
+                    <div class="widget-card" onclick="sendSuggestion('Apa motto angkatan kita?')"><i class="ri-flag-fill text-purple-500 text-xl mb-2"></i><p class="font-bold text-sm text-white">Identity</p><p class="text-[10px] text-gray-400">Motto angkatan</p></div>
+                </div>
+            </div>
+            <div id="messages-list" class="flex flex-col gap-6 hidden"></div>
+        </div>
+
+        <div class="absolute bottom-6 left-0 right-0 px-4 z-40 flex justify-center">
+            <div class="w-full max-w-2xl">
+                <form id="chat-form" class="glass-panel rounded-[2rem] p-1.5 pl-5 flex items-end gap-2 shadow-2xl transition-all focus-within:ring-1 focus-within:ring-emas/50">
+                    <textarea id="user-input" rows="1" class="w-full bg-transparent text-white text-[15px] py-3 focus:outline-none resize-none max-h-32 placeholder-gray-500" placeholder="Ketik pesan..."></textarea>
+                    <button type="submit" class="w-11 h-11 rounded-full bg-emas text-black flex items-center justify-center hover:bg-white transition-all transform hover:scale-105 shadow-lg flex-shrink-0"><i class="ri-arrow-up-line text-xl font-bold"></i></button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="rename-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="modal-overlay absolute inset-0" onclick="closeModals()"></div>
+        <div class="glass-panel relative w-80 p-6 rounded-3xl shadow-2xl animate-scale-in">
+            <h3 class="text-white font-bold text-lg mb-4 text-center">Ganti Nama Chat</h3>
+            <input type="text" id="rename-input" class="w-full bg-[#1C1C1E] border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emas mb-6" placeholder="Nama chat baru...">
+            <div class="flex gap-3">
+                <button onclick="closeModals()" class="flex-1 py-3 rounded-xl bg-[#2C2C2E] text-gray-300 font-medium hover:bg-[#3C3C3E] transition">Batal</button>
+                <button onclick="confirmRename()" class="flex-1 py-3 rounded-xl bg-emas text-black font-bold hover:bg-yellow-400 transition">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="modal-overlay absolute inset-0" onclick="closeModals()"></div>
+        <div class="glass-panel relative w-80 p-6 rounded-3xl shadow-2xl animate-scale-in text-center">
+            <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+                <i class="ri-delete-bin-line text-3xl text-red-500"></i>
+            </div>
+            <h3 class="text-white font-bold text-lg mb-2">Hapus Chat?</h3>
+            <p class="text-gray-400 text-sm mb-6">Yakin mau hapus? History ini gak bisa dibalikin lagi lho.</p>
+            <div class="flex gap-3">
+                <button onclick="closeModals()" class="flex-1 py-3 rounded-xl bg-[#2C2C2E] text-gray-300 font-medium hover:bg-[#3C3C3E] transition">Batal</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dataStruktur = {
+            "Ketua Angkatan": "Muhammad Nazir",
+            "Wakil 1": "Wilma Bantani",
+            "Wakil 2": "Khalifah Al-Qodri",
+            "Wakil 3": "Hafiz Zamzami",
+            "Wakil 4": "Annisa Fazar",
+            "Sekretaris": "Reza Alfiano, Millah Ayu, Syifa Fauziah, Faqih Nurmujaddid, Nurul Hikmah", 
+            "Bendahara": "Atthariq Ilham, Tsabita Madina, Aufa Iyad, Aluna Aisyawara",
+            "Sarana Prasarana": "Alfiyan Hidayat, Fitri Septiani, Aziz Ali, Aulia Nadmussaqib",
+            "Disterham": "Akmal Firjatulloh, Nadien Kartika, ilbram Darussalam, Zidane el",
+            "Humas": "Wildan Al jabbar, Zaskia Ramadhani, Hamdan Setiawan, Siti Mawall",
+            "Peribadatan": "Rizqo Al Huda, Sekar Harum, Muhammad Irfan, Yujib Alzura",
+            "Sora": "Raffa Satria, Naura Atta, Muhammad Akbarullah, Ayyub Abdul, Tiara Putri",
+            "Eskul": "Miftah Azzam, Kinata Umara, Faiq Atta, Nabila Indah",
+            "Bahasa": "Daffa Isbani, Wahyu Reda, Fahmi Hidayatulloh, Thalita Yasmin",
+            "Dokumentasi": "Kanzi Daffa, Nazila qurotta, Rizky Aditya, Sophie Raisa",
+            "Pramuka": "Azis Al Hakim, Fadilah Nur, Faiz Mumtaz, Aisah Hafizah",
+            "Gizi": "Daffa Aulia, Aura Aqwa, Alfan Wibosono, Muhammad Arkan, Cahya Difa",
+        };
+
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const messagesList = document.getElementById('messages-list');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const chatContainer = document.getElementById('chat-container');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const historyListEl = document.getElementById('history-list');
+        const renameModal = document.getElementById('rename-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const renameInput = document.getElementById('rename-input');
+
+        let chats = JSON.parse(localStorage.getItem('acentral_chats')) || [];
+        let activeChatId = null;
+        let targetChatId = null; // ID chat yang mau di-edit/hapus
+
+        // --- LOGIC ULTAH ---
+        function getTodayBirthdayInfo() {
+            if (typeof dbBirthday === 'undefined') return "Tidak ada data ulang tahun.";
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth() + 1; 
+            const celebrants = dbBirthday.filter(m => {
+                if (!m["TANGGAL"]) return false;
+                const parts = m["TANGGAL"].split(/[\/\-\s]+/);
+                if (parts.length < 2) return false;
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]);
+                return (day === currentDay && month === currentMonth);
+            });
+            if (celebrants.length > 0) {
+                const names = celebrants.map(c => c["NAMA"]).join(", ");
+                return `HARI INI ADA YANG ULTAH! 🎉 Namanya: ${names}. User WAJIB disuruh cek di menu Birthday Corner.`;
+            }
+            return "Hari ini TIDAK ADA yang ulang tahun.";
+        }
+
+        // --- SYSTEM PROMPT ---
+        function getSystemPrompt() {
+            const todayBirthdayInfo = getTodayBirthdayInfo();
+            const strukturText = Object.entries(dataStruktur).map(([jabatan, nama]) => `- ${jabatan}: ${nama}`).join("\n");
+            return `Kamu adalah ACENTRAL AI, asisten virtual resmi angkatan sekolah "ACENTRAL". IDENTITAS: Nama: ACENTRAL (Angkatan Cahaya Emas), Motto: "We are the Golden Generation". DATABASE STRUKTUR ORGANISASI (MPK): ${strukturText}. INFO ULTAH HARI INI: ${todayBirthdayInfo}. GAYA BICARA: Gunakan bahasa santai: "Lu", "Gua", "Bro", "Sis". Jangan kaku. Kalau ditanya struktur, jawab langsung sesuai data.`;
+        }
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHistorySidebar();
+            if (chats.length > 0) {
+                // Load chat terakhir yang tersimpan
+                loadChat(chats[0].id); 
+            } else {
+                createNewChat();
+            }
+        });
+
+        // --- SIDEBAR & HISTORY LOGIC ---
+        function renderHistorySidebar() {
+            historyListEl.innerHTML = '';
+            if (chats.length === 0) { historyListEl.innerHTML = '<div class="text-center mt-10"><i class="ri-chat-1-line text-gray-700 text-3xl"></i><p class="text-xs text-gray-700 mt-2">No history</p></div>'; return; }
+            chats.forEach(chat => {
+                const div = document.createElement('div');
+                div.className = `sidebar-item group ${chat.id === activeChatId ? 'active' : ''}`;
+                const titleDisplay = chat.title.length > 20 ? chat.title.substring(0, 20) + '...' : chat.title;
+                const date = new Date(chat.createdAt || Date.now());
+                const time = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                // BUTTON RENAME & DELETE ADA DISINI
+                div.innerHTML = `
+                    <div class="flex-1" onclick="loadChat(${chat.id})">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-medium text-gray-300 group-[.active]:text-emas truncate w-32">${titleDisplay}</span>
+                            <span class="text-[10px] text-gray-600">${time}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 truncate">Tap to open chat</p>
+                    </div>
+                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 group-[.active]:opacity-100 transition-opacity items-center ml-2">
+                        <button onclick="openRenameModal(event, ${chat.id})" class="text-gray-500 hover:text-white bg-[#2C2C2E] w-7 h-7 rounded-full flex items-center justify-center"><i class="ri-pencil-line"></i></button>
+                        <button onclick="openDeleteModal(event, ${chat.id})" class="text-gray-500 hover:text-red-500 bg-[#2C2C2E] w-7 h-7 rounded-full flex items-center justify-center"><i class="ri-delete-bin-line"></i></button>
+                    </div>
+                `;
+                historyListEl.appendChild(div);
+            });
+        }
+
+        function createNewChat() { 
+            activeChatId = Date.now(); 
+            const newChat = { id: activeChatId, title: "New Chat", messages: [], createdAt: new Date().toISOString() }; 
+            chats.unshift(newChat); 
+            saveData(); 
+            welcomeScreen.style.display = 'flex'; 
+            messagesList.classList.add('hidden'); 
+            messagesList.innerHTML = ''; 
+            renderHistorySidebar(); 
+            if(window.innerWidth < 768) toggleSidebar(); 
+        }
+
+        function loadChat(id) { 
+            activeChatId = id; 
+            const chat = chats.find(c => c.id === id); 
+            if (!chat) return; 
+            messagesList.innerHTML = ''; 
+            if (chat.messages.length === 0) { 
+                welcomeScreen.style.display = 'flex'; 
+                messagesList.classList.add('hidden'); 
+            } else { 
+                welcomeScreen.style.display = 'none'; 
+                messagesList.classList.remove('hidden'); 
+                chat.messages.forEach(msg => renderBubble(msg)); 
+            } 
+            renderHistorySidebar(); 
+            setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100); 
+            if(window.innerWidth < 768) { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); } 
+        }
+
+        // --- POPUP LOGIC (RENAME & DELETE) ---
+        function openRenameModal(e, id) { 
+            if(e) e.stopPropagation(); 
+            targetChatId = id; 
+            const chat = chats.find(c => c.id === id); 
+            renameInput.value = chat.title; 
+            renameModal.classList.remove('hidden'); 
+            renameModal.classList.add('flex'); 
+            renameInput.focus(); 
+        }
+
+        function confirmRename() { 
+            if (!targetChatId) return; 
+            const newName = renameInput.value.trim(); 
+            if (newName) { 
+                const chat = chats.find(c => c.id === targetChatId); 
+                chat.title = newName; 
+                saveData(); 
+                renderHistorySidebar(); 
+            } 
+            closeModals(); 
+        }
+
+        function openDeleteModal(e, id) { 
+            if(e) e.stopPropagation(); 
+            targetChatId = id; 
+            deleteModal.classList.remove('hidden'); 
+            deleteModal.classList.add('flex'); 
+        }
+
+        function confirmDelete() { 
+            if (targetChatId === 'ALL') { 
+                chats = []; 
+                localStorage.removeItem('acentral_chats'); 
+                createNewChat(); 
+            } else { 
+                chats = chats.filter(c => c.id !== targetChatId); 
+                saveData(); 
+                if (chats.length > 0) { 
+                    if (targetChatId === activeChatId) loadChat(chats[0].id); 
+                    else renderHistorySidebar(); 
+                } else { 
+                    createNewChat(); 
+                } 
+            } 
+            closeModals(); 
+        }
+
+        function closeModals() { 
+            renameModal.classList.add('hidden'); 
+            renameModal.classList.remove('flex'); 
+            deleteModal.classList.add('hidden'); 
+            deleteModal.classList.remove('flex'); 
+            targetChatId = null; 
+        }
+
+        function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); sidebarOverlay.classList.toggle('hidden'); }
+        function saveData() { localStorage.setItem('acentral_chats', JSON.stringify(chats)); }
+
+        // --- CHAT LOGIC ---
+        function sendSuggestion(text) { userInput.value = text; chatForm.dispatchEvent(new Event('submit')); }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            welcomeScreen.style.display = 'none';
+            messagesList.classList.remove('hidden');
+
+            let activeChat = chats.find(c => c.id === activeChatId);
+            if (!activeChat) { createNewChat(); activeChat = chats[0]; }
+
+            activeChat.messages.push({ id: Date.now(), text: text, sender: 'user' });
+            if (activeChat.title === "New Chat") activeChat.title = text.length > 20 ? text.substring(0, 20) + '...' : text;
+            saveData();
+            renderBubble({ text: text, sender: 'user' }, true);
+            renderHistorySidebar();
+
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            
+            // Show Typing
+            const divTyping = document.createElement('div');
+            divTyping.id = 'typing-indicator';
+            divTyping.className = 'flex justify-start w-full mb-6 animate-slide-up';
+            divTyping.innerHTML = `<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-[#2C2C2E] border border-gray-700 flex items-center justify-center flex-shrink-0 p-1"><img src="logo.png" class="w-full h-full object-contain"></div><div class="bg-[#1C1C1E] px-4 py-3 rounded-[20px] border border-white/5 flex items-center gap-1"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+            messagesList.appendChild(divTyping);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const currentSystemPrompt = getSystemPrompt();
+                const fullPrompt = `${currentSystemPrompt}\n\nUser nanya: ${text}\nJawab:`;
+                const apiUrl = `https://api.siputzx.my.id/api/ai/gemini-lite?prompt=${encodeURIComponent(fullPrompt)}&model=gemini-2.0-flash-lite`;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const response = await fetch(apiUrl, { signal: controller.signal });
+                const data = await response.json();
+                clearTimeout(timeoutId);
+
+                const typingEl = document.getElementById('typing-indicator');
+                if(typingEl) typingEl.remove();
+
+                let reply = data.data;
+                if (data.status && data.data && data.data.parts) reply = data.data.parts[0].text;
+                if (!reply) reply = "Maaf, server lagi sibuk.";
+
+                activeChat.messages.push({ id: Date.now() + 1, text: reply, sender: 'bot' });
+                saveData();
+                renderBubble({ text: reply, sender: 'bot' }, true);
+
+            } catch (error) {
+                console.error("API Error:", error);
+                const typingEl = document.getElementById('typing-indicator');
+                if(typingEl) typingEl.remove();
+                
+                const fallback = "Waduh, koneksi lagi gangguan nih bro.";
+                activeChat.messages.push({ id: Date.now() + 1, text: fallback, sender: 'bot' });
+                saveData();
+                renderBubble({ text: fallback, sender: 'bot' }, true);
+            }
+        });
+
+        function renderBubble(msg, animate = false) {
+            const div = document.createElement('div');
+            const isUser = msg.sender === 'user';
+            div.className = `flex w-full mb-6 ${isUser ? 'justify-end' : 'justify-start'} ${animate ? 'animate-slide-up' : ''}`;
+            
+            if (isUser) {
+                div.innerHTML = `<div class="msg-user">${msg.text}</div>`;
+            } else {
+                let formatted = msg.text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b class="text-white">$1</b>');
+                div.innerHTML = `<div class="flex items-start gap-3 max-w-[90%]"><div class="w-8 h-8 rounded-full bg-[#2C2C2E] border border-gray-700 flex items-center justify-center flex-shrink-0 p-1"><img src="logo.png" class="w-full h-full object-contain"></div><div class="msg-bot">${formatted}</div></div>`;
+            }
+            messagesList.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        userInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; if(this.value === '') this.style.height = 'auto'; });
+        userInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatForm.dispatchEvent(new Event('submit')); } });
+    </script>
+</body>
+</html>

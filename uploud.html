@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>ACENTRAL Admin - Write Article</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        :root { --gold: #f2c94c; --dark-bg: #0a0a0a; --card-bg: #141414; }
+        body { background: var(--dark-bg); color: #fff; font-family: 'Inter', sans-serif; padding: 40px; }
+        .admin-wrapper { max-width: 900px; margin: auto; }
+        
+        /* Styling Input Field Biasa */
+        .meta-input { background: var(--card-bg); border: 1px solid #333; color: #fff; padding: 15px; width: 100%; border-radius: 8px; margin-bottom: 20px; font-size: 16px; box-sizing: border-box; }
+        .meta-input:focus { border-color: var(--gold); outline: none; }
+
+        /* Styling Editor */
+        #editor-container { background: var(--card-bg); height: 400px; color: #fff; border: 1px solid #333; border-radius: 0 0 8px 8px; }
+        .ql-toolbar { background: #eee; border-radius: 8px 8px 0 0 !important; }
+        .ql-container { font-size: 16px; border-radius: 0 0 8px 8px !important; border-color: #333 !important; }
+        
+        .btn-publish { background: var(--gold); color: #000; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; float: right; margin-top: 20px; transition: 0.3s; }
+        .btn-publish:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(242, 201, 76, 0.4); }
+
+        /* Styling khusus blockquote agar mirip gambar lo */
+        blockquote {
+            background: #111; /* Warna hitam agak terang */
+            border-left: 4px solid #f2c94c; /* Garis kuning khas ACENTRAL */
+            margin: 1.5em 10px;
+            padding: 1em 20px;
+            font-style: italic;
+            color: #ccc;
+            border-radius: 0 8px 8px 0; /* Biar ujung kanannya agak tumpul */
+}
+    </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <h1 style="color: var(--gold)">Create New Article</h1>
+    
+    <input type="text" id="title" class="meta-input" placeholder="Judul Artikel...">
+    <input type="text" id="author" class="meta-input" placeholder="Nama Penulis (e.g. Divisi Publikasi)">
+    <input type="text" id="thumbnail" class="meta-input" placeholder="URL Thumbnail (assets/...)">
+
+    <div id="editor-container"></div>
+
+    <button class="btn-publish" onclick="submitToDatabase()">Simpan ke Database</button>
+</div>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script>
+    // Inisialisasi Editor
+    var quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'blockquote'],
+                ['link', 'image', 'video'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ]
+        }
+    });
+
+    function submitToDatabase() {
+        // 1. Ambil data teks/gambar dari editor dalam bentuk HTML String
+        const htmlContent = quill.root.innerHTML; 
+        
+        // 2. Ambil data meta lainnya
+        const payload = {
+            judul: document.getElementById('title').value,
+            penulis: document.getElementById('author').value,
+            thumbnail: document.getElementById('thumbnail').value,
+            isi: htmlContent, // Ini isinya persis format di dbBlog lo
+            tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'Long', year: 'numeric' })
+        };
+
+        console.log("Payload yang akan dikirim ke Database:", payload);
+        
+        // Di sini nanti lo pake fetch() buat kirim ke backend/Vercel serverless lo
+        // Contoh:
+        /*
+        fetch('/api/blog', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        }).then(...)
+        */
+        
+        alert("Berhasil! Cek console untuk melihat format HTML String-nya.");
+    }
+</script>
+</body>
+</html>
