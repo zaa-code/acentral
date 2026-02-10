@@ -77,11 +77,10 @@
             outline: none;
             box-sizing: border-box;
             transition: all 0.3s;
-            -webkit-appearance: none; /* Hapus style bawaan browser */
+            -webkit-appearance: none;
             appearance: none;
         }
 
-        /* Styling Khusus Dropdown (Select) */
         select {
             cursor: pointer;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238e8e93' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.185 5.355 2.402 5 2.814 5h9.455c.412 0 .63.355.364.659l-4.796 5.48a1 1 0 0 1-1.59 0z'/%3E%3C/svg%3E");
@@ -113,9 +112,27 @@
             margin-top: 28px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 20px rgba(255, 55, 95, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-match:active { transform: scale(0.95); opacity: 0.85; }
+        .btn-match:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* LOADING SPINNER */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         #resultArea {
             margin-top: 30px;
@@ -137,7 +154,6 @@
             text-shadow: 0 0 20px rgba(255, 55, 95, 0.4);
         }
 
-        /* MODAL POPUP STYLING */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -202,7 +218,10 @@
             </select>
         </div>
 
-        <button class="btn-match" onclick="findMatch()">Cek Jodoh Saya</button>
+        <button id="btnMatch" class="btn-match" onclick="findMatch()">
+            <div class="spinner" id="loadingSpinner"></div>
+            <span id="btnText">Cek Jodoh Saya</span>
+        </button>
 
         <div id="resultArea">
             <p style="font-size: 14px; color: var(--text-secondary);">Pasangan ideal kamu:</p>
@@ -220,523 +239,567 @@
     </div>
 
     <script>
-        // DATA EXCEL FULL (Disimpan di sini agar aman)
+        // DATA DUMMY (Ganti dengan data aslimu)
         const rawExcelData = `
-Sabiq Dayyana Ali bin Ali Aminulloh	R
-Shaffaa Fakhira Abdurrazaq binti Muhammad Nur Kholish AR	N
-Arima Amanti binti Muhammad Najib	N
-Aidan Sandi Giovanni bin Ana Mujahid	R
-Indana Lazulfa Husna binti Irwanto	N
-Arya Nurfattah bin Mohamad Arifin	R
-Zidane El Syahid bin Sunjana	R
-Ferida Fazriyani Tansya Karimah binti Ahmad Fery Supriatna	N
-Ade Putra Haq bin Manroni	R
-Millah Ayu Meidan Maha binti Sakat Maha	N
-Fikri Yazid As Salam bin Wicaksana Sudarma	R
-Rafi Dzikri Muhidin bin Didin Muhidin	R
-Bagus Tri Ramadan bin Sariman	R
-Fajar Salam Gemilang bin Triman	R
-Faridatul La'illi binti Narno	N
-Shakeela Arfa Wulandari binti Abdurrahman	N
-Firza Noer Ardy Azhar bin Yudi Azhar	R
-Ainal Yakin bin Donni Bagus Adijaya Sukmana	R
-Julian Putra Allya Satrio bin Supri	R
-Mutiara Naura Shabrina binti Amin Warsito	N
-Atifah Nur Istiqomah binti Sanuwan	N
-Ibnu Ridho Saiful Alam bin Suwarso	R
-Alfian Muhammad Nabil bin Mardonal	R
-Fathurriyan Al-Kareem bin Joko Maryono	R
-Dhimas Rizky Januar bin Maryanto	R
-Miftah Azzam Al Fawwaz bin Sicuk Suparwoto	R
-Ichtiar Rezqa bin Aryoni	R
-Dian Septiana binti Sugiyanto	N
-Haidar Azka Azzaahir bin Krisna Ade Wicaksono	R
-Muhammad Ari Affandi bin Suharyono	R
-Amelia Nurbahiz Darussalam binti Ahmad Maulana Sukarya	N
-Annastasya Firdausi Neno binti Jibrael Neno	N
-Nurkholik Akbar bin Rianto	R
-Febio Irdiyansah bin Mohamad Sobari	R
-Alya Nur Fauziah binti Adnan Fadilah	N
-Ilman Maliki bin Rahman Saleh	R
-Gustiawan Wiratama bin Agus Faizin	R
-Adib Fathi Dzakwan bin Toha	R
-Shopie Raisa Ramadani binti Ade Bustomi HAS	N
-Difa Putri Madani binti Ngadino	N
-Thalita Yasmin Zharifah binti Saeful Rohman	N
-Fa'iq Atha Nur Hibatullah bin Risun	R
-Husna Aqila Yasmin binti Supriyono	N
-Alifa Nurrohimah binti Ahmad Zarnuji	N
-Zaskia Ramadhani binti Supriyanto	N
-Assyfa Nurul Hidayah binti Nur Syamsi Hidayat	N
-Faiz Mumtaz bin Iyus Suparman	R
-Akbar Maulana Yusuf bin Sarmadi	R
-Piona Khoerunisa binti Idris Salam	N
-Nindita Assaiba binti Darmayulis	N
-Mutia Alwidad binti Nendi Kusnendi	N
-Fadhilah Nur Laela binti Wandi Suhaendi	N
-Hamdan Setiawan bin Sendi Sanudin	R
-Gigih Mulyawan bin Kuswanto	R
-Adesta Nur Azizah Agustin binti Panut	N
-Aulia Najmussaqib binti Misar	N
-Elsa Nabilah binti Soderi	N
-Putri Ayu Lestari binti Muhamad Jasrip	N
-Nur Alma Mardiah binti Kudang Endang Solihin	N
-Baginda Daffa Miftah Al-Falah bin Ronih Saronih	R
-Ayub Abdul Jabbar bin Widodo	R
-Rizqo Al Huda bin Ruslani	R
-Azfa Seyna Asshidiq binti Agung Nursidiq	N
-Ridho Al Mu'tamir bin Mukdi	R
-Firda Rohmatun Nisa binti Lili Nahwani	N
-Hafidz Zamzami Ramadhan bin Soleh	R
-Nadien Kartika Ayu binti Asep Andi Rusyandi	N
-Amirul Ikhsan bin Agung Arianto	R
-Sabrina Nur Aulia Faizati binti Ace	N
-Anisa Dinilah binti Sunarto	N
-Azril Fatkhan Mubina bin Heri Setiawan	R
-Achmad Walid Fazil Azzam bin Achmad Faizal	R
-Adhifa Alfath Radenmasaid bin Aspandi	R
-Arfita Ilma Husnaya binti Juaini	N
-Madania Azizah binti Kistil Inji	N
-Nizam Fahrezi bin Yayat Damiyati	R
-Muh. Putra Gani Katili bin Abdul Gaffar Katili	R
-Sayyid Azaria Gabriel bin Saiful Mukti	R
-Rizky Aditya Ramadhan bin Muhammad Idrus	R
-Randika Pratama Yudha bin Yudha Adi Tenggara	R
-Afrizal Aqsya Mudin bin Walyono	R
-Zundi Basthotan Madani bin Sutarno	R
-Abi Fardhan Gumilang bin Suhadis	R
-Shufwan Riza Alfathan bin Shufwan Qudsyi (Alm)	R
-Shira Nathania Alimah binti Raden Danika Sarottama Padmakusmah	N
-Nazila Qurrota Aini binti Lukman Hakim	N
-Teghas Syahidan Sofyan bin Yayan Sofyan	R
-Zahra Andina binti Nuryasin	N
-Wilma Bantani Hartoyo binti Hartoyo	N
-Fauzan Malik Al Aziz bin Hadi Priyotomo	R
-Abdul Hilmi Al Fatah bin Herdi	R
-Aisyah Az Zahra binti Nursal	N
-Naraya Malka Kamila binti Rully Ahmad Basar P.	N
-Natasya Izzati Syafira binti Taryono	N
-Siti Mawall Arochsayally Assma binti Aries Kuswara	N
-Amaranthia Syifa binti Syamsudin	N
-Kamila Zahrine Nurfitriani binti Kasirun	N
-Muhammad Ghifari Akbar bin Basrudin	R
-Azka Amelia Zhofiroh binti Eko Setiawan	N
-Muhammad Azriel Ikhlas bin Muhammad Arli Nugraha	R
-Abdan Syakuro Ananda Papalya bin Adin Papalya	R
-Yasmin Lia Alifah binti Tata Sugiana	N
-Maisyaa Hafidza Azzahra binti Arief Rino Arbiansyah	N
-Amira Dhia Kamila binti Yuli Purwanto	N
-Kinata Umara Basyirah binti Muhammad Zulkabir	N
-Arkan Achmad Ariqoh bin Aris Ariyanto	R
-Zahra Nur Aulya S. binti Deni Sulistyo	N
-Faza Malik bin Gatot Sugih Budiono	R
-Firda Aulia Azzahra binti Mohamad Zainuri	N
-Einar Zeta Basthatan Fi Al Illmi bin Suwanto	R
-Mohammad Rafay Maher Rohail bin Sukiran	R
-Hanif Allam Mufid bin Muzamil Saleh	R
-Almira Hamizah Adiva binti Supriyanto	N
-Hanifah Sakha Alfiah binti Yosep	N
-Nuril Ilmi Elmumtazi bin Miftahul Ulum	R
-Waldin Septiyandi Al Fitrah bin Buhori Muslim	R
-Maliq Arkan Hifzur Rahman bin Anton Rustanto	R
-Riyas Arun Syidad bin Feri Sapari Amirullah	R
-Iftar Syauqi Fatan bin Tofa Fidyansyah	R
-Hana Kamila Hidayat binti Rahmat Hidayat	N
-Sausan Alya Mukhbita binti Muhamad Saipudin	N
-Mochamad Ghatan Adlullathiif bin Derit yanto	R
-Mochamad Ghamel Arrasyiid bin Derit Yanto	R
-Syifa Fauziah binti Idi Tarsidi	N
-Mikael Hafuza Ramadhan bin Irsan Ramadhan	R
-Siti Aisah binti Suyono	N
-Intan Listiyana Sari binti Yana Rogyana	N
-Jeanshe Daiva Raina binti Deni Ganjar Nugraha	N
-Vania Putri Madani binti Budi Fahri Wibowo	N
-Keenar Hasna Qanitah binti Abidin	N
-Atras Abdul Jabbar bin Haries Eko Winarno	R
-Athasha Zarqoo Intishaar bin Herman	R
-Mazaya Lubna Tsabitha binti Mulyadi	N
-Hulwah Fairus Mufidah binti Muhamad Al-Purqon	N
-Rasendriya Rafisqy Al Kholiq bin Agustian Hadi Candra Kusuma	R
-Athaya Chiquita Azalia binti Abdul Rokhim	N
-Jihan Dzakiyyah Rifdah binti Hasrul	N
-Fairuz Khalisa Rafailah binti Darwito	N
-Fatir Peace Ardhian bin Yayan Sopyan	R
-Difa Fauzan Ubaidillah bin Jaenudin	R
-Ibnu Hafidz Almu'thi bin Asep Hanhan Burhanudin	R
-Aqlia Zoolal binti Hery Suprayuga	N
-Hasya Aqeela Firana binti Thoriq Firdaus	N
-Naura Saffana Karlutta binti Sofyan Yunus	N
-Sarah Ayu Khaerani binti Kasto	N
-Rafli Akbar bin Mazwandi	R
-Faarisa Queen Darmawan binti Rifki Darmawan	N
-Safana Milka Camelia binti Udin Nurudin	N
-Dhabith Ahsani Almajid bin Sumanto	R
-Raihan Eka Saputra bin Agus Riatna	R
-Kamila Putri Ramadhan binti Mikhrodin	N
-Fathir Al-Fath bin Usup Suparman	R
-Muhammad Ridho Alghifahry bin Darsan	R
-Alfiyan Hidayat bin Muhammad Adkha Rosadi	R
-Annisa Fazar binti Anip	N
-Okta Dwi Luthfi Al Magribi bin Tri Budoyo	R
-Wahyu Reda Nuryanti binti Sukirno	N
-Ahmad Yusuf bin Agus Rianto	R
-Akmal Firjatulloh bin Ebta Yulianto	R
-Azka Fazriani binti Siswanto	N
-Bima Abdi Gumilang bin Tohari	R
-Fadil Ghany Aswary bin Yulizar Aswari	R
-Aulia Rahma binti Yusman Natas	N
-Aura Aqwa Mumtaza binti Heri Suswanto	N
-Haifa Sabrina binti Aryanto	N
-Kanzi Daffa Fauzan bin Ari Zuqnil Fauza	R
-Rijal Rahman Muttaqin bin Teguh Adhi Apriyadhi	R
-Farhan Ramadhan Alfarizi bin Darmadi Widjaya	R
-Miftakhul Jannah Aurora binti Suid	N
-Muhammad Axelle El-Fathin bin Hernawan	R
-Muhammad Akbarullah Three Kanto bin Sukanto	R
-Basthitanna Ilma Wael Jisma binti Subarkah Bayu Aji	N
-Qalisha Hati Adinda binti Haddy Kurniawan	N
-Ahmad Rezky Ardiansyah bin Rofikhul Hadi	R
-Keyla Sarifa Putri binti Andy Surachman	N
-Reza Alfiano bin Karsim	R
-Carlos Darrel Arrafi bin Kholiq Efendi	R
-Imam Taqi Hady bin Asdi Saputra	R
-Ghifari Salman Al Rasyid bin Ade Firmansyah	R
-Muhammad Alif Satriyawan bin Bambang Sudarmaji	R
-Almira Azalia binti Suhadi	N
-Annisa Fitri Rudfiany binti Rudi	N
-Hafiez Badi Arazid bin Mas'ud	R
-Fhalisa Kamelia binti Ahmad Yani	N
-Satria Uji Pangestu bin Ngatman	R
-Syifa Kamila Ramadhani binti La Juridin	N
-Alifa Luthfiyana Putri binti Suwarno	N
-Gea Restu Alkinanti binti Moch. Zainul Arifin	N
-Beentan Elfrian Zahir bin Walyono	R
-Anneke Belle Kartika binti Widya Adhikarya Kartika	N
-Ghaitsa Kamilah binti Agus Rianto	N
-Intan Zulfiani Al Widad binti Moch. Achyar	N
-Labib Iksan Adzani bin Muhammad Iksan	R
-Najma Sammawat Al Barokah binti Al Furqon	N
-Aziz Haryo Aji bin Eman Sartiman	R
-Rizky Al-Fatih bin Bahri	R
-Sultan Muhamad Gilang Saputra bin Sarwadi	R
-Mumtaz Hisyam Al Alimi bin Doni Romdoni	R
-Syfa Sopiatun Nufus binti Muhamad Saeful	N
-Atthariq Ilham Firdaus bin Zulpawardi	R
-Arjuna Wilaktita Gumilang bin Firman Solikhin	R
-Raffa Satria Bintang bin Muhamad Hasani	R
-Aufa Iyad Faiz Barigh Albara bin Firman	R
-Rizki Maulana bin Yusup Supriadi	R
-Fathu Akbar bin Akmaludin	R
-Khoirun Nisa binti Ahmad Toyib Sahrodin	N
-Fadilah Nur Amanah binti Mustopa	N
-Fitri Septiani binti Abas Jaelani	N
-Naila Irdina Wahab binti Efendy Santoso	N
-Muhamad Irfan Amrudin bin Wakhrudin	R
-Fatiha Safira Rizki binti Pondok Hasan Fahmi	N
-Hayyuni Sajaratuddur binti Akhmad Basofi	N
-Naufal Mufidi Dzakwan bin Dimas Harisetiagara	R
-Annisa Rafeyfa Fahira binti Arif Mufarik	N
-Muhamad Khoirul Ikhsan bin Misno	R
-Muhammad Nazir bin Ahmad Suandi	R
-Reza Aulia Kamal bin Imam	R
-Khusnul Khoviola binti Ridho Sinaga	N
-Ahdhan Azka Pratama bin Usin	R
-Aulia Dzakiyah Putri binti Ipoeng Etvin Handoyo	N
-Yuni Astuti binti Suparman	N
-Hafidz Maulana bin Memen Salman	R
-Muhamad Hafidz Akbar bin Asril Tanjung	R
-Alkmar Maulana Ahmad bin Ahmad Yani	R
-Ghofary Maulana bin M. Ali Ben	R
-Kayla Adilla binti Abdullah	N
-Alya Tsuraya Fathani binti Muhammad Nur	N
-Adzroo Delphinia Nurpa binti Nuryanto	N
-Jihan Zahira Alfath binti M. Rochani	N
-Shilah Rahmah As Shiddiq binti Febri Pamungkas	N
-Nafisah Jahra Hanifah binti Parichin	N
-Mu'afa Al Muhajir Siregar bin Ridwan Siregar	R
-Malikal Widad bin Asep Jamaludin	R
-Aini Zahrotun Aulia binti Tatang Sunardi	N
-Arjuna Aprileo Saputra bin Bayu Saputra	R
-Ichsanul Hakim Alfath bin Abdurrokhim	R
-Fanny Asyaliani binti Enda Suhenda	N
-Tiara Putri Ramadani binti Budi Utomo	N
-Muhammad Arkan Al Faridzi bin Suharyanto	R
-Hagia Shofia binti Supriatna	N
-Fathur Ramadhan bin Akhmad Saikhu Zuhri	R
-Chalista Muthia Ramadani binti Chairul Anwar	N
-Putri Raasiyah Muthmainnah binti Pardi	N
-Naura Atta Zatira binti Suprapto	N
-Asyraf Fakhruddin bin Sukarjono Slamet	R
-Kelvin Alpinki bin Eeng Suherman	R
-Deanita Nurusalam binti Andi Kuswandi	N
-Muhammad Lutfi bin Suheli	R
-Abdul Kholif Gumilang bin Rohman	R
-Syarif Maulana bin Suherman	R
-Ridho Ari Angkasa bin Toto Ari Yulianto	R
-Rahlil Dzihni Adam bin Zairi Adi Gunawan	R
-Annisa Hasanah binti Safrizal Atril	N
-Khalifa Al Qodri Ramadhon bin Elpiadi	R
-Muhammad Syadam Alfarizki bin Triyono	R
-Maria Kamalia Falaah binti Sucipto Kuncoro	N
-Dzikra Faridatul Ulya binti Dena Mulyana	N
-Yarfa'illahul Jannah binti Suyono	N
-Mohamad Naufal Zahrani bin Moh. Akhsanuddin	R
-Bashar Almukti bin Sairan	R
-Hafiz Alkamil bin Andri Gunawan	R
-Alimin Khoerul Azzam bin Agus Riswandi	R
-Althaf Arohman bin Suherman	R
-Dafa Isbani Azzam bin Hermanto	R
-Fida Hanifah binti M. Ashari	N
-Ganis Sofiatul Dinar binti Muhammad Husni Mubarok	N
-Rizal Aqilah Nabil bin Ari	R
-Nadif Al Ghoni bin Asmanto	R
-Naufal Rahman Ibrahim bin Udin Zaenudin	R
-Akbar Sholeh Ibrahim bin Ahrom Hidayat	R
-Cahaya Diffa Negara binti Teguh Satrio Wibowo	N
-Lubna Putri Syawalia binti Katiman	N
-Salam Rizal Al Kamil bin Asep Suhendra	R
-Wildan Al Jabbar bin Udin Wahyudin	R
-Muhammad Irfan Sya'bani bin Subagyo	R
-Amira Istiqomah Zakaria binti Sukbi Mz	N
-Gaisan Nizamul Hamizan bin Didik Anto	R
-Sekar Harum Nur Alfath binti Yusmin	N
-Maidi Salam bin Suranto	R
-Saskia Natasya Aulia binti Arianto	N
-Panji Najib Habibullah bin Amin	R
-Akhmad Tegar Fatahillah bin M. Agus Riyadi	R
-Aldin Erwansyah bin Iwan Wahyudin	R
-Ilma Arsala Adania binti Edi Suyanto	N
-Nahar Kholiq Kurnia bin Suwarni	R
-Rijaluddin Nahniatussalam bin Deni Iskandar	R
-Dani Darussalam bin Darim	R
-Alfia Islami Nugraha binti Ahmad Nugraha	N
-Nisrina Agniyah Nur Ashshidiq binti Arifudin	N
-Zahran Firdaus bin Riyanto	R
-Athifa Febianty binti Barnas	N
-Cita Al Dinni binti Ahmad Jumhadi	N
-Nahla Al-Widad binti Hirman Adiyanto	N
-Husna Althafunnisa binti Usmana	N
-Dafa Aulia Ghifaro bin Roby Iskandar	R
-Rezky Alif Rahman bin Rohani	R
-Badri Salam bin Mastabili	R
-Azzam Mikail Ramadhan bin Khairudin Ansori	R
-Reza Syah Alam bin Muhaimin	R
-May Athifa Hara binti Muhamad Hatta	N
-M. Zaid Mikail Arkhan bin Muliyana	R
-Fathir Akbar Fittian bin Muhamad Andrie Vietrian	R
-Muvida Madiniah Ilhammi binti Solehudin	N
-Maulana Rasyidi bin Esti Jalu Tuhu Prasetyo	R
-Elfa Rizqa Mutia Zahra binti Selamet Raharjo	N
-Achmad Rasyad Al Khairy bin Ahmad Maulana	R
-Al Frinsa Pratama As Sodiqin bin Yatno	R
-Rizky Feldy Armansyah bin Lugiyanto	R
-Difa Askana Ratifa binti Danil	N
-Shifa Sabrina Azzahra binti Handoko	N
-Yusuf Adi Bramansta bin Supriyo	R
-Sarah Putri Humairah binti Siswadi	N
-Muhammad Naufal Al Jabar bin Eri Kristianto	R
-Haula Ma'rufah binti Mokhamad Ikhwani	N
-Syabab Alfi Karim bin Rukmadi	R
-Aditiya Adnan Maulana bin Mi'an	R
-Fahri Almukti bin Lukman Isnaini	R
-Azkiya Sakillah binti Ambar Suwoyo	N
-Yusuf Cordoba bin Muhammad Husein	R
-Nur Kholis bin Usman	R
-Nadzifa Deara Fiya binti Puryadi	N
-Adit Ferdiyansyah bin Endang Juhaeni	R
-Nadin Qori Fateha binti Nasori	N
-Mufti Nur Hasbhi bin Eko Wuryanto	R
-Rofida Rahmah binti Khasani	N
-Azahrah Maidina Hanif binti Darwanto	N
-Ibnu Zulafa Arrafi bin Muhamad Al Amin	R
-Nailah Isa Addinna binti Danang Suprayogi	N
-Da'i Rijal Rafif bin Saripudin	R
-Jendaya Zalika Amrullah binti Amrullah	N
-Yujib Alzura binti Andriyansyah	N
-Fahmi Hidayatullah bin Ali Sodikin	R
-Nahar Ahmad Kurnia bin Suwarni	R
-Fahri Azhar bin Soleh	R
-Panji Angkasa Putra bin Duriyanto Muhammad Hadi	R
-Wafiq Dhiya Ulhaq binti Mustofik	N
-Irpad Fadhil Rahmat bin Mansur	R
-Muhammad Faris Alghaziy bin Fauzih	R
-Mohamad Alvin Juniardi bin Turisman	R
-Faris Muhammad Rizky Aprillio bin Fajar Novianto	R
-Muhammad Al Farish bin Nasril	R
-Dzaki Maulana bin Werna Hendri Nopayana	R
-Naila Adzkia Sahla binti Yadi Saputra	N
-Amos Iago Suwondo bin Suwondo	R
-Al-Ikhwanudin bin Marjani	R
-Safira Al Madinah binti Edi Priyono	N
-Ulfiyatun Azizah binti Wasto	N
-Aziz Aliful Fuaidy bin Wasto	R
-Fathir Al Rizki bin Riyanto	R
-Della Aprita Nurlilahi binti Kadar Sutrisno	N
-Deska Riski Safaras bin Iwan Setiawan	R
-Akilah Zarifa Naila binti Juwandi	N
-Muhammad Fariz Azhar bin Tasam	R
-Habil Noor Asshaf bin Sofyan Hadi	R
-Rizky Dwi Ardyansah bin Mudakir	R
-Fariz Firman Nurkhakim bin Suhardi	R
-Annisa Febriyani binti Nadi Haryanto	N
-Zihril Gilang Ramadhan bin Ajong	R
-Aisyah Dahlia Ghani binti Kusnaidi	N
-Safaan Nisatus Solehah binti Supriyanto	N
-Aisah Hafizah Anwar binti Anwar	N
-Farida Ilma Nurafifa binti Abu Bakar	N
-Zifana Salma Agustin binti Muhammad Syaepudin	N
-Maulana Yusuf Khadafi bin Kusjanto	R
-Dzakwan Al Haq bin Rindang Adinusa	R
-Idham Chalid Qohar bin Suhardiyat	R
-Dinda Dwi Rahma Putri binti Triyono	N
-Muhammad Bayu Firdaus bin Sriyono	R
-Ilbram Darussalam bin Edi Kusworo	R
-Fardhan Alfarish bin Asep Junaedi	R
-Nabil Abdun Nashir bin Tata Wirnata	R
-Faturrohman Khoirulamir bin Sukirman	R
-Ahmad Al Farizi bin Sugeng	R
-Sandya Azri Al Assyada bin Indra Hendrayana	R
-Kharisna Daffa Al Fath bin Herman Edi Susilo	R
-Tsania Husna Aishi binti Sofyan Slamet	N
-Hafizh Madyan Gumilang bin Yana	R
-Alisha Afiyah Nur Dinar binti Heri Purnama	N
-Satria Husni Al Gifary bin Maryono	R
-Rahman Mudzakir bin Endin Samsudin	R
-Hilda Hamidah binti Kusnandar	N
-Zahra Aulia Ramadani binti Dadang supriatna	N
-Finnegan Ahmad Majid Rahmatullah bin Rizal Irzani	R
-Raina Putri Andini binti Ahmad Hidayat	N
-Ahmad Syafi'i Mufid bin Entun Royana	R
-Ersyad Fazrul Hakim bin Asep Muchtar	R
-Mawar Putri Nurhayati binti Yusuf Mulyadi	N
-Ghania Nursabila binti Tirman	N
-Elvaretta Zahra Athirah binti Lukman Mabruli	N
-Ridwan Setiawan bin Nurdin	R
-Ulfa Aulia binti Sutisna	N
-Daffa Dhiya Ulhaq bin Engkus Kusnadi	R
-Muhamad Ilyas bin Komar	R
-Nafisa Lulu Maknun binti Khayat	N
-Shofi Alfathonah binti Agus Rahman Hakim	N
-Muhamad Jibril Al Qatani bin Agus hendrayana	R
-Nur Hanifah Ayuna binti Jaji Saerozi	N
-Azis Al Hakim bin Ahmad	R
-Muhammad Abiyan Adli Kayana Hasan bin Zaenal Hasan	R
-Akmal Nur Fazri bin Asep Saepulmilah	R
-Fajar Madani bin Iwa Kartiwa	R
-Dinda Tiara Hadisyach Fath binti Acep Komar Hady	N
-Dandi Ramadhan Hadisyach Fath bin Acep Komar Hady	R
-Widiyanto Munazat bin Mispan	R
-Auliya Azzahra binti Musron Ibnu Mustofa	N
-Zakia Khoerunnisa binti Wowo Darsono	N
-Aziz Ali Hasan bin Arma Basir	R
-Nisrina Arij Hasna binti Dian Suryana	N
-Rozaq Jazilul Fawaid bin Elan	R
-Aldin Hanif bin Dede Ramdani	R
-Fadli Ziadi bin Saefudin	R
-Ra'is Arsal H. Raspati bin Yaya Sunarya	R
-Dina Khoirunnisa binti Tatang	N
-Faakiha Lintang Ayu binti Waris Sangimin	N
-Nazril Irham Alaziz bin Samsudin	R
-Billa Ramadhani binti Mardian	N
-Ahmad Khoerul Anwar bin Nanang Kosim	R
-Aluna Aisyawara Al Fatihah binti Subur Santoso	N
-Aghniya Lutfia Azzahra binti Ajat Sobandi	N
-Muhamad Ilhamsyah bin Sujana	R
-Reina Sevilla Anatolia binti Agah Nugraha Wiganjar	N
-Nurul Hikmah Putri Asidik binti Didim Dimyanudin	N
-Nabila Indah Ikhwania binti Eko Mujiyanto	N
-Isa Alfida Iftikhar bin Arif Romadhon	R
-Syifa Safitri binti Sukirno	N
-Fika Mazayatus Sholihah binti Slamet	N
-Fahmi Ash Shiddiqy bin Muhamad Toha	R
-Muhamad Jundi bin Muhyidin	R
-Al Maratu Kamila binti Amri	N
-Faqih Nurmujaddid Bastona bin Saeful Bachtiar	R
-Khansa Qonita Fidina Mu'ti binti Awaludin, A.Mk.	N
-Abdur Rosyid Al Mubarok bin Eko Priadi	R
-Tsabita Madina Azzahro binti Sungkono	N
-Fawwaz Barraq Al Umraan bin Imam Suhada	R
-Zahra Amalia Arzety binti Puji Harno	N
-Mohamad Faiz Al Akbar bin Ngalim	R
-Irfansyah Zaki Aulia bin Ramses Indriawan	R
-Rangga Wijaya bin Sutrisno	R
-Syahdan Al Firdausy bin Sugiarso	R
-Alfiah Faizah Azra binti Iwan Nopiyanto	N
-Muhammad Dzaki As Salam bin Eka Prasetyandani	R
-Sultan Abdee Baldan bin Abbasi	R
-Nadhifa Zahirah Al Madani binti Budi Santoso	N
-Mohammad Ravan Aldiano bin Daman Nuri	R
-Afifatul Amiroh Mazaya Labiqo binti Ridwan	N
-Najma Faridatul Ukhuwiyah binti Supriadi	N
-Zidnie Nursyahidah binti Simson Muliawan	N
-Nabila Fatimah Az-Zahra binti Suryadin	N
-Alfan Wibisono bin Sobari Wicaksono	R
-Aisyah Nur Aini Hidayah binti Sarwono	N
-Imam Hadinul Haq bin Daroji	R
-Al Jazuli Ibrahimovic Habibi bin Shokib Anshori	R
-Affan Yazid Al Hakim bin Khairul Anwar	R
-Noval Zaky Abyan bin Edi Hariyanto	R
-Cadas Pekerja Pembebasan bin Leonardo Prasasi	R
-Irsyad Syamsudin Saydan bin Rahman Hidayat	R
-Anugrah Pratama Hidayatullah bin Selamet Triyono	R
-Fauzan Rio Fadilka bin Riyadi	R
-Muhammad Nurrizqi bin Rudianto	R
-Nayaka Bagus Rahmatullah bin Joko Supriyono	R
-Adira Ziva binti Muhammad Naim	N
-Akid Mikael bin Bustami	R
-Anis Sofea Iqlima binti Mohd Yazid	N
-Damia Aqilah binti Mohd Azahari	N
-Isdhia Ul Husna binti Ismail	N
-Izzat Qurani Ong bin Ainul Izaham Ong	R
-Nur Anis Damia binti Amil Hamzah	N
-Nur Areesa Bahiyah binti Muhammad Haizar	N
-Qayyum Qadri bin Mohd Zamri	R
-Zahin bin Mohd Zabri	R
-Zara Irdina binti Ahmad Nuzi	N
+Sabiq Dayyana Ali bin Ali Aminulloh R
+Shaffaa Fakhira Abdurrazaq binti Muhammad Nur Kholish AR    N
+Arima Amanti binti Muhammad Najib   N
+Aidan Sandi Giovanni bin Ana Mujahid    R
+Indana Lazulfa Husna binti Irwanto  N
+Arya Nurfattah bin Mohamad Arifin   R
+Zidane El Syahid bin Sunjana    R
+Ferida Fazriyani Tansya Karimah binti Ahmad Fery Supriatna  N
+Ade Putra Haq bin Manroni   R
+Millah Ayu Meidan Maha binti Sakat Maha N
+Fikri Yazid As Salam bin Wicaksana Sudarma  R
+Rafi Dzikri Muhidin bin Didin Muhidin   R
+Bagus Tri Ramadan bin Sariman   R
+Fajar Salam Gemilang bin Triman R
+Faridatul La'illi binti Narno   N
+Shakeela Arfa Wulandari binti Abdurrahman   N
+Firza Noer Ardy Azhar bin Yudi Azhar    R
+Ainal Yakin bin Donni Bagus Adijaya Sukmana R
+Julian Putra Allya Satrio bin Supri R
+Mutiara Naura Shabrina binti Amin Warsito   N
+Atifah Nur Istiqomah binti Sanuwan  N
+Ibnu Ridho Saiful Alam bin Suwarso  R
+Alfian Muhammad Nabil bin Mardonal  R
+Fathurriyan Al-Kareem bin Joko Maryono  R
+Dhimas Rizky Januar bin Maryanto    R
+Miftah Azzam Al Fawwaz bin Sicuk Suparwoto  R
+Ichtiar Rezqa bin Aryoni    R
+Dian Septiana binti Sugiyanto   N
+Haidar Azka Azzaahir bin Krisna Ade Wicaksono   R
+Muhammad Ari Affandi bin Suharyono  R
+Amelia Nurbahiz Darussalam binti Ahmad Maulana Sukarya  N
+Annastasya Firdausi Neno binti Jibrael Neno N
+Nurkholik Akbar bin Rianto  R
+Febio Irdiyansah bin Mohamad Sobari R
+Alya Nur Fauziah binti Adnan Fadilah    N
+Ilman Maliki bin Rahman Saleh   R
+Gustiawan Wiratama bin Agus Faizin  R
+Adib Fathi Dzakwan bin Toha R
+Shopie Raisa Ramadani binti Ade Bustomi HAS N
+Difa Putri Madani binti Ngadino N
+Thalita Yasmin Zharifah binti Saeful Rohman N
+Fa'iq Atha Nur Hibatullah bin Risun R
+Husna Aqila Yasmin binti Supriyono  N
+Alifa Nurrohimah binti Ahmad Zarnuji    N
+Zaskia Ramadhani binti Supriyanto   N
+Assyfa Nurul Hidayah binti Nur Syamsi Hidayat   N
+Faiz Mumtaz bin Iyus Suparman   R
+Akbar Maulana Yusuf bin Sarmadi R
+Piona Khoerunisa binti Idris Salam  N
+Nindita Assaiba binti Darmayulis    N
+Mutia Alwidad binti Nendi Kusnendi  N
+Fadhilah Nur Laela binti Wandi Suhaendi N
+Hamdan Setiawan bin Sendi Sanudin   R
+Gigih Mulyawan bin Kuswanto R
+Adesta Nur Azizah Agustin binti Panut   N
+Aulia Najmussaqib binti Misar   N
+Elsa Nabilah binti Soderi   N
+Putri Ayu Lestari binti Muhamad Jasrip  N
+Nur Alma Mardiah binti Kudang Endang Solihin    N
+Baginda Daffa Miftah Al-Falah bin Ronih Saronih R
+Ayub Abdul Jabbar bin Widodo    R
+Rizqo Al Huda bin Ruslani   R
+Azfa Seyna Asshidiq binti Agung Nursidiq    N
+Ridho Al Mu'tamir bin Mukdi R
+Firda Rohmatun Nisa binti Lili Nahwani  N
+Hafidz Zamzami Ramadhan bin Soleh   R
+Nadien Kartika Ayu binti Asep Andi Rusyandi N
+Amirul Ikhsan bin Agung Arianto R
+Sabrina Nur Aulia Faizati binti Ace N
+Anisa Dinilah binti Sunarto N
+Azril Fatkhan Mubina bin Heri Setiawan  R
+Achmad Walid Fazil Azzam bin Achmad Faizal  R
+Adhifa Alfath Radenmasaid bin Aspandi   R
+Arfita Ilma Husnaya binti Juaini    N
+Madania Azizah binti Kistil Inji    N
+Nizam Fahrezi bin Yayat Damiyati    R
+Muh. Putra Gani Katili bin Abdul Gaffar Katili  R
+Sayyid Azaria Gabriel bin Saiful Mukti  R
+Rizky Aditya Ramadhan bin Muhammad Idrus    R
+Randika Pratama Yudha bin Yudha Adi Tenggara    R
+Afrizal Aqsya Mudin bin Walyono R
+Zundi Basthotan Madani bin Sutarno  R
+Abi Fardhan Gumilang bin Suhadis    R
+Shufwan Riza Alfathan bin Shufwan Qudsyi (Alm)  R
+Shira Nathania Alimah binti Raden Danika Sarottama Padmakusmah  N
+Nazila Qurrota Aini binti Lukman Hakim  N
+Teghas Syahidan Sofyan bin Yayan Sofyan R
+Zahra Andina binti Nuryasin N
+Wilma Bantani Hartoyo binti Hartoyo N
+Fauzan Malik Al Aziz bin Hadi Priyotomo R
+Abdul Hilmi Al Fatah bin Herdi  R
+Aisyah Az Zahra binti Nursal    N
+Naraya Malka Kamila binti Rully Ahmad Basar P.  N
+Natasya Izzati Syafira binti Taryono    N
+Siti Mawall Arochsayally Assma binti Aries Kuswara  N
+Amaranthia Syifa binti Syamsudin    N
+Kamila Zahrine Nurfitriani binti Kasirun    N
+Muhammad Ghifari Akbar bin Basrudin R
+Azka Amelia Zhofiroh binti Eko Setiawan N
+Muhammad Azriel Ikhlas bin Muhammad Arli Nugraha    R
+Abdan Syakuro Ananda Papalya bin Adin Papalya   R
+Yasmin Lia Alifah binti Tata Sugiana    N
+Maisyaa Hafidza Azzahra binti Arief Rino Arbiansyah N
+Amira Dhia Kamila binti Yuli Purwanto   N
+Kinata Umara Basyirah binti Muhammad Zulkabir   N
+Arkan Achmad Ariqoh bin Aris Ariyanto   R
+Zahra Nur Aulya S. binti Deni Sulistyo  N
+Faza Malik bin Gatot Sugih Budiono  R
+Firda Aulia Azzahra binti Mohamad Zainuri   N
+Einar Zeta Basthatan Fi Al Illmi bin Suwanto    R
+Mohammad Rafay Maher Rohail bin Sukiran R
+Hanif Allam Mufid bin Muzamil Saleh R
+Almira Hamizah Adiva binti Supriyanto   N
+Hanifah Sakha Alfiah binti Yosep    N
+Nuril Ilmi Elmumtazi bin Miftahul Ulum  R
+Waldin Septiyandi Al Fitrah bin Buhori Muslim   R
+Maliq Arkan Hifzur Rahman bin Anton Rustanto    R
+Riyas Arun Syidad bin Feri Sapari Amirullah R
+Iftar Syauqi Fatan bin Tofa Fidyansyah  R
+Hana Kamila Hidayat binti Rahmat Hidayat    N
+Sausan Alya Mukhbita binti Muhamad Saipudin N
+Mochamad Ghatan Adlullathiif bin Derit yanto    R
+Mochamad Ghamel Arrasyiid bin Derit Yanto   R
+Syifa Fauziah binti Idi Tarsidi N
+Mikael Hafuza Ramadhan bin Irsan Ramadhan   R
+Siti Aisah binti Suyono N
+Intan Listiyana Sari binti Yana Rogyana N
+Jeanshe Daiva Raina binti Deni Ganjar Nugraha   N
+Vania Putri Madani binti Budi Fahri Wibowo  N
+Keenar Hasna Qanitah binti Abidin   N
+Atras Abdul Jabbar bin Haries Eko Winarno   R
+Athasha Zarqoo Intishaar bin Herman R
+Mazaya Lubna Tsabitha binti Mulyadi N
+Hulwah Fairus Mufidah binti Muhamad Al-Purqon   N
+Rasendriya Rafisqy Al Kholiq bin Agustian Hadi Candra Kusuma    R
+Athaya Chiquita Azalia binti Abdul Rokhim   N
+Jihan Dzakiyyah Rifdah binti Hasrul N
+Fairuz Khalisa Rafailah binti Darwito   N
+Fatir Peace Ardhian bin Yayan Sopyan    R
+Difa Fauzan Ubaidillah bin Jaenudin R
+Ibnu Hafidz Almu'thi bin Asep Hanhan Burhanudin R
+Aqlia Zoolal binti Hery Suprayuga   N
+Hasya Aqeela Firana binti Thoriq Firdaus    N
+Naura Saffana Karlutta binti Sofyan Yunus   N
+Sarah Ayu Khaerani binti Kasto  N
+Rafli Akbar bin Mazwandi    R
+Faarisa Queen Darmawan binti Rifki Darmawan N
+Safana Milka Camelia binti Udin Nurudin N
+Dhabith Ahsani Almajid bin Sumanto  R
+Raihan Eka Saputra bin Agus Riatna  R
+Kamila Putri Ramadhan binti Mikhrodin   N
+Fathir Al-Fath bin Usup Suparman    R
+Muhammad Ridho Alghifahry bin Darsan    R
+Alfiyan Hidayat bin Muhammad Adkha Rosadi   R
+Annisa Fazar binti Anip N
+Okta Dwi Luthfi Al Magribi bin Tri Budoyo   R
+Wahyu Reda Nuryanti binti Sukirno   N
+Ahmad Yusuf bin Agus Rianto R
+Akmal Firjatulloh bin Ebta Yulianto R
+Azka Fazriani binti Siswanto    N
+Bima Abdi Gumilang bin Tohari   R
+Fadil Ghany Aswary bin Yulizar Aswari   R
+Aulia Rahma binti Yusman Natas  N
+Aura Aqwa Mumtaza binti Heri Suswanto   N
+Haifa Sabrina binti Aryanto N
+Kanzi Daffa Fauzan bin Ari Zuqnil Fauza R
+Rijal Rahman Muttaqin bin Teguh Adhi Apriyadhi  R
+Farhan Ramadhan Alfarizi bin Darmadi Widjaya    R
+Miftakhul Jannah Aurora binti Suid  N
+Muhammad Axelle El-Fathin bin Hernawan  R
+Muhammad Akbarullah Three Kanto bin Sukanto R
+Basthitanna Ilma Wael Jisma binti Subarkah Bayu Aji N
+Qalisha Hati Adinda binti Haddy Kurniawan   N
+Ahmad Rezky Ardiansyah bin Rofikhul Hadi    R
+Keyla Sarifa Putri binti Andy Surachman N
+Reza Alfiano bin Karsim R
+Carlos Darrel Arrafi bin Kholiq Efendi  R
+Imam Taqi Hady bin Asdi Saputra R
+Ghifari Salman Al Rasyid bin Ade Firmansyah R
+Muhammad Alif Satriyawan bin Bambang Sudarmaji  R
+Almira Azalia binti Suhadi  N
+Annisa Fitri Rudfiany binti Rudi    N
+Hafiez Badi Arazid bin Mas'ud   R
+Fhalisa Kamelia binti Ahmad Yani    N
+Satria Uji Pangestu bin Ngatman R
+Syifa Kamila Ramadhani binti La Juridin N
+Alifa Luthfiyana Putri binti Suwarno    N
+Gea Restu Alkinanti binti Moch. Zainul Arifin   N
+Beentan Elfrian Zahir bin Walyono   R
+Anneke Belle Kartika binti Widya Adhikarya Kartika  N
+Ghaitsa Kamilah binti Agus Rianto   N
+Intan Zulfiani Al Widad binti Moch. Achyar  N
+Labib Iksan Adzani bin Muhammad Iksan   R
+Najma Sammawat Al Barokah binti Al Furqon   N
+Aziz Haryo Aji bin Eman Sartiman    R
+Rizky Al-Fatih bin Bahri    R
+Sultan Muhamad Gilang Saputra bin Sarwadi   R
+Mumtaz Hisyam Al Alimi bin Doni Romdoni R
+Syfa Sopiatun Nufus binti Muhamad Saeful    N
+Atthariq Ilham Firdaus bin Zulpawardi   R
+Arjuna Wilaktita Gumilang bin Firman Solikhin   R
+Raffa Satria Bintang bin Muhamad Hasani R
+Aufa Iyad Faiz Barigh Albara bin Firman R
+Rizki Maulana bin Yusup Supriadi    R
+Fathu Akbar bin Akmaludin   R
+Khoirun Nisa binti Ahmad Toyib Sahrodin N
+Fadilah Nur Amanah binti Mustopa    N
+Fitri Septiani binti Abas Jaelani   N
+Naila Irdina Wahab binti Efendy Santoso N
+Muhamad Irfan Amrudin bin Wakhrudin R
+Fatiha Safira Rizki binti Pondok Hasan Fahmi    N
+Hayyuni Sajaratuddur binti Akhmad Basofi    N
+Naufal Mufidi Dzakwan bin Dimas Harisetiagara   R
+Annisa Rafeyfa Fahira binti Arif Mufarik    N
+Muhamad Khoirul Ikhsan bin Misno    R
+Muhammad Nazir bin Ahmad Suandi R
+Reza Aulia Kamal bin Imam   R
+Khusnul Khoviola binti Ridho Sinaga N
+Ahdhan Azka Pratama bin Usin    R
+Aulia Dzakiyah Putri binti Ipoeng Etvin Handoyo N
+Yuni Astuti binti Suparman  N
+Hafidz Maulana bin Memen Salman R
+Muhamad Hafidz Akbar bin Asril Tanjung  R
+Alkmar Maulana Ahmad bin Ahmad Yani R
+Ghofary Maulana bin M. Ali Ben  R
+Kayla Adilla binti Abdullah N
+Alya Tsuraya Fathani binti Muhammad Nur N
+Adzroo Delphinia Nurpa binti Nuryanto   N
+Jihan Zahira Alfath binti M. Rochani    N
+Shilah Rahmah As Shiddiq binti Febri Pamungkas  N
+Nafisah Jahra Hanifah binti Parichin    N
+Mu'afa Al Muhajir Siregar bin Ridwan Siregar    R
+Malikal Widad bin Asep Jamaludin    R
+Aini Zahrotun Aulia binti Tatang Sunardi    N
+Arjuna Aprileo Saputra bin Bayu Saputra R
+Ichsanul Hakim Alfath bin Abdurrokhim   R
+Fanny Asyaliani binti Enda Suhenda  N
+Tiara Putri Ramadani binti Budi Utomo   N
+Muhammad Arkan Al Faridzi bin Suharyanto    R
+Hagia Shofia binti Supriatna    N
+Fathur Ramadhan bin Akhmad Saikhu Zuhri R
+Chalista Muthia Ramadani binti Chairul Anwar    N
+Putri Raasiyah Muthmainnah binti Pardi  N
+Naura Atta Zatira binti Suprapto    N
+Asyraf Fakhruddin bin Sukarjono Slamet  R
+Kelvin Alpinki bin Eeng Suherman    R
+Deanita Nurusalam binti Andi Kuswandi   N
+Muhammad Lutfi bin Suheli   R
+Abdul Kholif Gumilang bin Rohman    R
+Syarif Maulana bin Suherman R
+Ridho Ari Angkasa bin Toto Ari Yulianto R
+Rahlil Dzihni Adam bin Zairi Adi Gunawan    R
+Annisa Hasanah binti Safrizal Atril N
+Khalifa Al Qodri Ramadhon bin Elpiadi   R
+Muhammad Syadam Alfarizki bin Triyono   R
+Maria Kamalia Falaah binti Sucipto Kuncoro  N
+Dzikra Faridatul Ulya binti Dena Mulyana    N
+Yarfa'illahul Jannah binti Suyono   N
+Mohamad Naufal Zahrani bin Moh. Akhsanuddin R
+Bashar Almukti bin Sairan   R
+Hafiz Alkamil bin Andri Gunawan R
+Alimin Khoerul Azzam bin Agus Riswandi  R
+Althaf Arohman bin Suherman R
+Dafa Isbani Azzam bin Hermanto  R
+Fida Hanifah binti M. Ashari    N
+Ganis Sofiatul Dinar binti Muhammad Husni Mubarok   N
+Rizal Aqilah Nabil bin Ari  R
+Nadif Al Ghoni bin Asmanto  R
+Naufal Rahman Ibrahim bin Udin Zaenudin R
+Akbar Sholeh Ibrahim bin Ahrom Hidayat  R
+Cahaya Diffa Negara binti Teguh Satrio Wibowo   N
+Lubna Putri Syawalia binti Katiman  N
+Salam Rizal Al Kamil bin Asep Suhendra  R
+Wildan Al Jabbar bin Udin Wahyudin  R
+Muhammad Irfan Sya'bani bin Subagyo R
+Amira Istiqomah Zakaria binti Sukbi Mz  N
+Gaisan Nizamul Hamizan bin Didik Anto   R
+Sekar Harum Nur Alfath binti Yusmin N
+Maidi Salam bin Suranto R
+Saskia Natasya Aulia binti Arianto  N
+Panji Najib Habibullah bin Amin R
+Akhmad Tegar Fatahillah bin M. Agus Riyadi  R
+Aldin Erwansyah bin Iwan Wahyudin   R
+Ilma Arsala Adania binti Edi Suyanto    N
+Nahar Kholiq Kurnia bin Suwarni R
+Rijaluddin Nahniatussalam bin Deni Iskandar R
+Dani Darussalam bin Darim   R
+Alfia Islami Nugraha binti Ahmad Nugraha    N
+Nisrina Agniyah Nur Ashshidiq binti Arifudin    N
+Zahran Firdaus bin Riyanto  R
+Athifa Febianty binti Barnas    N
+Cita Al Dinni binti Ahmad Jumhadi   N
+Nahla Al-Widad binti Hirman Adiyanto    N
+Husna Althafunnisa binti Usmana N
+Dafa Aulia Ghifaro bin Roby Iskandar    R
+Rezky Alif Rahman bin Rohani    R
+Badri Salam bin Mastabili   R
+Azzam Mikail Ramadhan bin Khairudin Ansori  R
+Reza Syah Alam bin Muhaimin R
+May Athifa Hara binti Muhamad Hatta N
+M. Zaid Mikail Arkhan bin Muliyana  R
+Fathir Akbar Fittian bin Muhamad Andrie Vietrian    R
+Muvida Madiniah Ilhammi binti Solehudin N
+Maulana Rasyidi bin Esti Jalu Tuhu Prasetyo R
+Elfa Rizqa Mutia Zahra binti Selamet Raharjo    N
+Achmad Rasyad Al Khairy bin Ahmad Maulana   R
+Al Frinsa Pratama As Sodiqin bin Yatno  R
+Rizky Feldy Armansyah bin Lugiyanto R
+Difa Askana Ratifa binti Danil  N
+Shifa Sabrina Azzahra binti Handoko N
+Yusuf Adi Bramansta bin Supriyo R
+Sarah Putri Humairah binti Siswadi  N
+Muhammad Naufal Al Jabar bin Eri Kristianto R
+Haula Ma'rufah binti Mokhamad Ikhwani   N
+Syabab Alfi Karim bin Rukmadi   R
+Aditiya Adnan Maulana bin Mi'an R
+Fahri Almukti bin Lukman Isnaini    R
+Azkiya Sakillah binti Ambar Suwoyo  N
+Yusuf Cordoba bin Muhammad Husein   R
+Nur Kholis bin Usman    R
+Nadzifa Deara Fiya binti Puryadi    N
+Adit Ferdiyansyah bin Endang Juhaeni    R
+Nadin Qori Fateha binti Nasori  N
+Mufti Nur Hasbhi bin Eko Wuryanto   R
+Rofida Rahmah binti Khasani N
+Azahrah Maidina Hanif binti Darwanto    N
+Ibnu Zulafa Arrafi bin Muhamad Al Amin  R
+Nailah Isa Addinna binti Danang Suprayogi   N
+Da'i Rijal Rafif bin Saripudin  R
+Jendaya Zalika Amrullah binti Amrullah  N
+Yujib Alzura binti Andriyansyah N
+Fahmi Hidayatullah bin Ali Sodikin  R
+Nahar Ahmad Kurnia bin Suwarni  R
+Fahri Azhar bin Soleh   R
+Panji Angkasa Putra bin Duriyanto Muhammad Hadi R
+Wafiq Dhiya Ulhaq binti Mustofik    N
+Irpad Fadhil Rahmat bin Mansur  R
+Muhammad Faris Alghaziy bin Fauzih  R
+Mohamad Alvin Juniardi bin Turisman R
+Faris Muhammad Rizky Aprillio bin Fajar Novianto    R
+Muhammad Al Farish bin Nasril   R
+Dzaki Maulana bin Werna Hendri Nopayana R
+Naila Adzkia Sahla binti Yadi Saputra   N
+Amos Iago Suwondo bin Suwondo   R
+Al-Ikhwanudin bin Marjani   R
+Safira Al Madinah binti Edi Priyono N
+Ulfiyatun Azizah binti Wasto    N
+Aziz Aliful Fuaidy bin Wasto    R
+Fathir Al Rizki bin Riyanto R
+Della Aprita Nurlilahi binti Kadar Sutrisno N
+Deska Riski Safaras bin Iwan Setiawan   R
+Akilah Zarifa Naila binti Juwandi   N
+Muhammad Fariz Azhar bin Tasam  R
+Habil Noor Asshaf bin Sofyan Hadi   R
+Rizky Dwi Ardyansah bin Mudakir R
+Fariz Firman Nurkhakim bin Suhardi  R
+Annisa Febriyani binti Nadi Haryanto    N
+Zihril Gilang Ramadhan bin Ajong    R
+Aisyah Dahlia Ghani binti Kusnaidi  N
+Safaan Nisatus Solehah binti Supriyanto N
+Aisah Hafizah Anwar binti Anwar N
+Farida Ilma Nurafifa binti Abu Bakar    N
+Zifana Salma Agustin binti Muhammad Syaepudin   N
+Maulana Yusuf Khadafi bin Kusjanto  R
+Dzakwan Al Haq bin Rindang Adinusa  R
+Idham Chalid Qohar bin Suhardiyat   R
+Dinda Dwi Rahma Putri binti Triyono N
+Muhammad Bayu Firdaus bin Sriyono   R
+Ilbram Darussalam bin Edi Kusworo   R
+Fardhan Alfarish bin Asep Junaedi   R
+Nabil Abdun Nashir bin Tata Wirnata R
+Faturrohman Khoirulamir bin Sukirman    R
+Ahmad Al Farizi bin Sugeng  R
+Sandya Azri Al Assyada bin Indra Hendrayana R
+Kharisna Daffa Al Fath bin Herman Edi Susilo    R
+Tsania Husna Aishi binti Sofyan Slamet  N
+Hafizh Madyan Gumilang bin Yana R
+Alisha Afiyah Nur Dinar binti Heri Purnama  N
+Satria Husni Al Gifary bin Maryono  R
+Rahman Mudzakir bin Endin Samsudin  R
+Hilda Hamidah binti Kusnandar   N
+Zahra Aulia Ramadani binti Dadang supriatna N
+Finnegan Ahmad Majid Rahmatullah bin Rizal Irzani   R
+Raina Putri Andini binti Ahmad Hidayat  N
+Ahmad Syafi'i Mufid bin Entun Royana    R
+Ersyad Fazrul Hakim bin Asep Muchtar    R
+Mawar Putri Nurhayati binti Yusuf Mulyadi   N
+Ghania Nursabila binti Tirman   N
+Elvaretta Zahra Athirah binti Lukman Mabruli    N
+Ridwan Setiawan bin Nurdin  R
+Ulfa Aulia binti Sutisna    N
+Daffa Dhiya Ulhaq bin Engkus Kusnadi    R
+Muhamad Ilyas bin Komar R
+Nafisa Lulu Maknun binti Khayat N
+Shofi Alfathonah binti Agus Rahman Hakim    N
+Muhamad Jibril Al Qatani bin Agus hendrayana    R
+Nur Hanifah Ayuna binti Jaji Saerozi    N
+Azis Al Hakim bin Ahmad R
+Muhammad Abiyan Adli Kayana Hasan bin Zaenal Hasan  R
+Akmal Nur Fazri bin Asep Saepulmilah    R
+Fajar Madani bin Iwa Kartiwa    R
+Dinda Tiara Hadisyach Fath binti Acep Komar Hady    N
+Dandi Ramadhan Hadisyach Fath bin Acep Komar Hady   R
+Widiyanto Munazat bin Mispan    R
+Auliya Azzahra binti Musron Ibnu Mustofa    N
+Zakia Khoerunnisa binti Wowo Darsono    N
+Aziz Ali Hasan bin Arma Basir   R
+Nisrina Arij Hasna binti Dian Suryana   N
+Rozaq Jazilul Fawaid bin Elan   R
+Aldin Hanif bin Dede Ramdani    R
+Fadli Ziadi bin Saefudin    R
+Ra'is Arsal H. Raspati bin Yaya Sunarya R
+Dina Khoirunnisa binti Tatang   N
+Faakiha Lintang Ayu binti Waris Sangimin    N
+Nazril Irham Alaziz bin Samsudin    R
+Billa Ramadhani binti Mardian   N
+Ahmad Khoerul Anwar bin Nanang Kosim    R
+Aluna Aisyawara Al Fatihah binti Subur Santoso  N
+Aghniya Lutfia Azzahra binti Ajat Sobandi   N
+Muhamad Ilhamsyah bin Sujana    R
+Reina Sevilla Anatolia binti Agah Nugraha Wiganjar  N
+Nurul Hikmah Putri Asidik binti Didim Dimyanudin    N
+Nabila Indah Ikhwania binti Eko Mujiyanto   N
+Isa Alfida Iftikhar bin Arif Romadhon   R
+Syifa Safitri binti Sukirno N
+Fika Mazayatus Sholihah binti Slamet    N
+Fahmi Ash Shiddiqy bin Muhamad Toha R
+Muhamad Jundi bin Muhyidin  R
+Al Maratu Kamila binti Amri N
+Faqih Nurmujaddid Bastona bin Saeful Bachtiar   R
+Khansa Qonita Fidina Mu'ti binti Awaludin, A.Mk.    N
+Abdur Rosyid Al Mubarok bin Eko Priadi  R
+Tsabita Madina Azzahro binti Sungkono   N
+Fawwaz Barraq Al Umraan bin Imam Suhada R
+Zahra Amalia Arzety binti Puji Harno    N
+Mohamad Faiz Al Akbar bin Ngalim    R
+Irfansyah Zaki Aulia bin Ramses Indriawan   R
+Rangga Wijaya bin Sutrisno  R
+Syahdan Al Firdausy bin Sugiarso    R
+Alfiah Faizah Azra binti Iwan Nopiyanto N
+Muhammad Dzaki As Salam bin Eka Prasetyandani   R
+Sultan Abdee Baldan bin Abbasi  R
+Nadhifa Zahirah Al Madani binti Budi Santoso    N
+Mohammad Ravan Aldiano bin Daman Nuri   R
+Afifatul Amiroh Mazaya Labiqo binti Ridwan  N
+Najma Faridatul Ukhuwiyah binti Supriadi    N
+Zidnie Nursyahidah binti Simson Muliawan    N
+Nabila Fatimah Az-Zahra binti Suryadin  N
+Alfan Wibisono bin Sobari Wicaksono R
+Aisyah Nur Aini Hidayah binti Sarwono   N
+Imam Hadinul Haq bin Daroji R
+Al Jazuli Ibrahimovic Habibi bin Shokib Anshori R
+Affan Yazid Al Hakim bin Khairul Anwar  R
+Noval Zaky Abyan bin Edi Hariyanto  R
+Cadas Pekerja Pembebasan bin Leonardo Prasasi   R
+Irsyad Syamsudin Saydan bin Rahman Hidayat  R
+Anugrah Pratama Hidayatullah bin Selamet Triyono    R
+Fauzan Rio Fadilka bin Riyadi   R
+Muhammad Nurrizqi bin Rudianto  R
+Nayaka Bagus Rahmatullah bin Joko Supriyono R
+Adira Ziva binti Muhammad Naim  N
+Akid Mikael bin Bustami R
+Anis Sofea Iqlima binti Mohd Yazid  N
+Damia Aqilah binti Mohd Azahari N
+Isdhia Ul Husna binti Ismail    N
+Izzat Qurani Ong bin Ainul Izaham Ong   R
+Nur Anis Damia binti Amil Hamzah    N
+Nur Areesa Bahiyah binti Muhammad Haizar    N
+Qayyum Qadri bin Mohd Zamri R
+Zahin bin Mohd Zabri    R
+Zara Irdina binti Ahmad Nuzi    N
         `;
 
-        // PARSER & CLEANING
         const dataJodoh = rawExcelData.trim().split('\n').map(line => {
-            let [namaFull, genderCode] = line.split('\t');
+            const lastSpaceIndex = line.lastIndexOf(' ');
+            if (lastSpaceIndex === -1) return null;
+            const namaFull = line.substring(0, lastSpaceIndex).trim();
+            const genderCode = line.substring(lastSpaceIndex).trim();
             if(!namaFull) return null;
-            // Potong bin/binti
-            const namaBersih = namaFull.split(/\s(?:bin|binti)\s/i)[0].trim();
+            
+            // Perbaikan regex: \s untuk spasi dan 'bin'/'binti' dengan case insensitive
+            const namaBersih = namaFull.split(/\s+(?:bin|binti)\s+/i)[0].trim();
+            
             return {
                 nama: namaBersih,
-                gender: (genderCode && genderCode.trim().toUpperCase() === 'R') ? 'pria' : 'wanita'
+                gender: (genderCode && genderCode.toUpperCase() === 'R') ? 'pria' : 'wanita'
             };
         }).filter(item => item !== null);
 
+        // ... Sisa fungsi JavaScript tetap sama ...
+        
         function findMatch() {
             const inputEl = document.getElementById('userName');
             const nameInput = inputEl.value;
             const genderInput = document.getElementById('genderOption').value;
             const resultArea = document.getElementById('resultArea');
+            const btn = document.getElementById('btnMatch');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
 
-            // VALIDASI NAMA
             if (!nameInput.trim()) {
                 document.getElementById('modalAlert').style.display = 'flex';
                 return;
             }
 
-            const filtered = dataJodoh.filter(p => p.gender === genderInput);
-            if (filtered.length === 0) return alert("Database kosong!");
+            inputEl.disabled = true;
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            btnText.style.display = 'none';
+            resultArea.style.display = 'none';
 
-            const randomPerson = filtered[Math.floor(Math.random() * filtered.length)];
-            const score = Math.floor(Math.random() * 21) + 80;
+            setTimeout(() => {
+                // Perbaikan Filter: 
+                // Jika user pilih "pria" (mencari jodoh pria), filter data yang gender='pria'.
+                // Jika user pilih "wanita" (mencari jodoh wanita), filter data yang gender='wanita'.
+                const filtered = dataJodoh.filter(p => p.gender === genderInput);
+                
+                if (filtered.length === 0) {
+                    alert("Database kosong! Tidak ada data dengan gender tersebut.");
+                    resetState();
+                    return;
+                }
 
-            document.getElementById('matchName').innerText = randomPerson.nama;
-            document.getElementById('compatibility').innerText = `🔥 Kecocokan: ${score}%`;
-            resultArea.style.display = "block";
-            
-            // RESET INPUT
-            inputEl.value = ""; 
+                const randomPerson = filtered[Math.floor(Math.random() * filtered.length)];
+                const score = Math.floor(Math.random() * 21) + 80;
+
+                document.getElementById('matchName').innerText = randomPerson.nama;
+                document.getElementById('compatibility').innerText = `🔥 Kecocokan: ${score}%`;
+                resultArea.style.display = "block";
+
+                resetState();
+            }, 1500); 
+        }
+        
+        // ... Fungsi resetState, closeModal, dan Event Listener tetap sama ...
+        function resetState() {
+            const inputEl = document.getElementById('userName');
+            const btn = document.getElementById('btnMatch');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
+
+            inputEl.disabled = false;
+            btn.disabled = false;
+            spinner.style.display = 'none';
+            btnText.style.display = 'block';
+            inputEl.focus(); 
         }
 
         function closeModal() {
             document.getElementById('modalAlert').style.display = 'none';
             document.getElementById('userName').focus();
         }
+
+        document.getElementById('userName').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                findMatch();
+            }
+        });
+
     </script>
 </body>
 </html>
