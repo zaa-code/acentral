@@ -47,5 +47,12 @@
     "NAMA": "Akbar Sholeh Ibrahim bin Ahrom Hidayat",
     "PANGGILAN": "Akbar",
     "TANGGAL": "08\/06\/2010"
+    },
+    {
+    "NO": 8,
+    "NO INDUK": 20220134,
+    "NAMA": "Maliq Arkan Hifzur Rahman bin Anton Rustanto",
+    "PANGGILAN": "Arkan",
+    "TANGGAL": "12\/02\/2010"
     }
     ];

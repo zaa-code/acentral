@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cari Jodoh</title>
+    <script src="db_members.js"></script> 
+    
     <style>
         :root {
             --bg-color: #000000;
-            --card-bg: rgba(28, 28, 30, 0.75);
+            --card-bg: rgba(28, 28, 30, 0.85); /* Sedikit lebih gelap biar teks jelas */
             --accent-gradient: linear-gradient(135deg, #ff375f, #ff9f0a);
             --text-main: #ffffff;
             --text-secondary: #8e8e93;
@@ -23,9 +25,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Ganti height jadi min-height */
             margin: 0;
-            overflow: hidden;
+            overflow-y: auto; /* Biar bisa discroll kalau mentok */
+            padding: 20px; /* Padding biar gak nempel pinggir di HP */
+            box-sizing: border-box;
         }
 
         .ios-card {
@@ -33,27 +37,37 @@
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 35px;
-            border-radius: 45px;
-            width: 330px;
+            padding: 30px;
+            border-radius: 40px;
+            width: 400px; /* Lebih lebar biar muat layout samping */
+            max-width: 100%; 
             text-align: center;
             box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin: 0 0 5px 0;
             background: var(--accent-gradient);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
         .input-group {
-            margin-top: 22px;
+            margin-top: 15px;
             text-align: left;
             position: relative;
+            width: 100%;
         }
 
         label {
@@ -69,11 +83,11 @@
             width: 100%;
             background: var(--input-bg);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px;
-            border-radius: 18px;
+            padding: 14px 16px;
+            border-radius: 16px;
             color: white;
-            font-size: 16px;
-            margin-top: 8px;
+            font-size: 15px;
+            margin-top: 6px;
             outline: none;
             box-sizing: border-box;
             transition: all 0.3s;
@@ -104,12 +118,12 @@
             color: white;
             border: none;
             width: 100%;
-            padding: 18px;
-            border-radius: 22px;
-            font-size: 17px;
+            padding: 16px;
+            border-radius: 20px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 28px;
+            margin-top: 25px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 20px rgba(255, 55, 95, 0.3);
             display: flex;
@@ -121,7 +135,6 @@
         .btn-match:active { transform: scale(0.95); opacity: 0.85; }
         .btn-match:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
-        /* LOADING SPINNER */
         .spinner {
             width: 18px;
             height: 18px;
@@ -134,26 +147,82 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* --- LAYOUT HASIL JODOH (HORIZONTAL) --- */
         #resultArea {
-            margin-top: 30px;
+            margin-top: 25px;
             display: none;
+            /* Layout Menyamping (Row) */
+            flex-direction: row; 
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: left; /* Teks rata kiri */
             animation: iosReveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         @keyframes iosReveal {
-            from { opacity: 0; transform: scale(0.9) translateY(15px); }
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .match-name {
-            font-size: 30px;
-            font-weight: 800;
-            display: block;
-            margin: 10px 0;
-            line-height: 1.2;
-            text-shadow: 0 0 20px rgba(255, 55, 95, 0.4);
+        .match-photo-container {
+            width: 70px; /* Ukuran foto lebih kecil biar muat samping */
+            height: 70px;
+            border-radius: 50%;
+            padding: 3px;
+            background: var(--accent-gradient);
+            box-shadow: 0 5px 15px rgba(255, 55, 95, 0.3);
+            margin-right: 15px; /* Jarak ke teks */
+            flex-shrink: 0; /* Foto gak boleh gepeng */
+        }
+        
+        .match-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #1c1c1e;
+            background-color: #000;
         }
 
+        .match-info {
+            flex-grow: 1;
+            overflow: hidden; /* Biar teks gak bleber */
+        }
+
+        .match-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin: 0;
+            margin-bottom: 2px;
+        }
+
+        .match-name {
+            font-size: 18px; /* Ukuran font nama disesuaikan */
+            font-weight: 800;
+            display: block;
+            line-height: 1.2;
+            color: white;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .compatibility {
+            color: #34c759;
+            font-weight: 700;
+            font-size: 13px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* MODAL */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -166,48 +235,49 @@
         }
 
         .modal-box {
-            background: rgba(35, 35, 35, 0.9);
-            width: 270px;
+            background: rgba(35, 35, 35, 0.95);
+            width: 280px;
             border-radius: 24px;
-            padding: 24px;
+            padding: 25px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.1);
             animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         @keyframes modalPop {
-            from { transform: scale(0.7); opacity: 0; }
+            from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
-        .modal-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 22px; line-height: 1.4; }
+        .modal-title { font-weight: 700; font-size: 19px; margin-bottom: 8px; }
+        .modal-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.4; }
         
         .modal-btn {
             background: transparent;
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.12);
+            border-top: 0.5px solid rgba(255,255,255,0.15);
             color: #0a84ff;
-            width: calc(100% + 48px);
-            margin: 0 -24px -24px -24px;
-            padding: 16px 0;
+            width: calc(100% + 50px);
+            margin: 0 -25px -25px -25px;
+            padding: 15px 0;
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
             border-radius: 0 0 24px 24px;
         }
-        .modal-btn:active { background: rgba(255,255,255,0.05); }
+        .modal-btn:active { background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
     <div class="ios-card">
         <h1>Match Maker</h1>
-        <p style="color: var(--text-secondary); font-size: 13px;">Temukan pasangan idealmu hari ini</p>
+        <p class="subtitle">Temukan pasangan idealmu hari ini</p>
 
         <div class="input-group">
             <label>Nama Kamu</label>
-            <input type="text" id="userName" placeholder="Ketik di sini...">
+            <input type="text" id="userName" placeholder="Ketik nama kamu...">
         </div>
 
         <div class="input-group">
@@ -224,9 +294,15 @@
         </button>
 
         <div id="resultArea">
-            <p style="font-size: 14px; color: var(--text-secondary);">Pasangan ideal kamu:</p>
-            <span class="match-name" id="matchName"></span>
-            <p id="compatibility" style="color: #34c759; font-weight: bold; font-size: 15px;"></p>
+            <div class="match-photo-container">
+                <img src="https://via.placeholder.com/150" id="matchImage" class="match-photo" alt="Foto Jodoh">
+            </div>
+            <div class="match-info">
+                <p class="match-label">Pasangan Ideal:</p>
+                <span class="match-name" id="matchName">-</span>
+                <div class="compatibility" id="compatibility">
+                    </div>
+            </div>
         </div>
     </div>
 
@@ -239,7 +315,7 @@
     </div>
 
     <script>
-        // DATA DUMMY (Ganti dengan data aslimu)
+        // DATA EXCEL LENGKAP
         const rawExcelData = `
 Sabiq Dayyana Ali bin Ali Aminulloh R
 Shaffaa Fakhira Abdurrazaq binti Muhammad Nur Kholish AR    N
@@ -714,15 +790,19 @@ Zahin bin Mohd Zabri    R
 Zara Irdina binti Ahmad Nuzi    N
         `;
 
+        // PARSER & CLEANING
         const dataJodoh = rawExcelData.trim().split('\n').map(line => {
+            // Memisahkan nama dan kode gender (R/N) berdasarkan spasi terakhir
             const lastSpaceIndex = line.lastIndexOf(' ');
-            if (lastSpaceIndex === -1) return null;
+            if (lastSpaceIndex === -1) return null; // Skip jika format salah
+
             const namaFull = line.substring(0, lastSpaceIndex).trim();
             const genderCode = line.substring(lastSpaceIndex).trim();
+
             if(!namaFull) return null;
             
-            // Perbaikan regex: \s untuk spasi dan 'bin'/'binti' dengan case insensitive
-            const namaBersih = namaFull.split(/\s+(?:bin|binti)\s+/i)[0].trim();
+            // Potong bin/binti (opsional, tergantung format data aslimu)
+            const namaBersih = namaFull.split(/\s(?:bin|binti)\s/i)[0].trim();
             
             return {
                 nama: namaBersih,
@@ -730,8 +810,7 @@ Zara Irdina binti Ahmad Nuzi    N
             };
         }).filter(item => item !== null);
 
-        // ... Sisa fungsi JavaScript tetap sama ...
-        
+        // --- NEW LOGIC: FIND MATCH WITH LOADING ---
         function findMatch() {
             const inputEl = document.getElementById('userName');
             const nameInput = inputEl.value;
@@ -740,26 +819,32 @@ Zara Irdina binti Ahmad Nuzi    N
             const btn = document.getElementById('btnMatch');
             const btnText = document.getElementById('btnText');
             const spinner = document.getElementById('loadingSpinner');
+            const matchImage = document.getElementById('matchImage');
 
+            // VALIDASI NAMA
             if (!nameInput.trim()) {
                 document.getElementById('modalAlert').style.display = 'flex';
                 return;
             }
 
+            // --- START LOADING ---
+            // Disable input & button
             inputEl.disabled = true;
             btn.disabled = true;
+            
+            // Show Spinner, Hide Text
             spinner.style.display = 'block';
             btnText.style.display = 'none';
+            
+            // Hide previous result
             resultArea.style.display = 'none';
 
+            // Simulate Network/Processing Delay (1.5 seconds)
             setTimeout(() => {
-                // Perbaikan Filter: 
-                // Jika user pilih "pria" (mencari jodoh pria), filter data yang gender='pria'.
-                // Jika user pilih "wanita" (mencari jodoh wanita), filter data yang gender='wanita'.
                 const filtered = dataJodoh.filter(p => p.gender === genderInput);
                 
                 if (filtered.length === 0) {
-                    alert("Database kosong! Tidak ada data dengan gender tersebut.");
+                    alert("Database kosong! Pastikan data rawExcelData terisi dengan benar.");
                     resetState();
                     return;
                 }
@@ -767,15 +852,41 @@ Zara Irdina binti Ahmad Nuzi    N
                 const randomPerson = filtered[Math.floor(Math.random() * filtered.length)];
                 const score = Math.floor(Math.random() * 21) + 80;
 
+                // --- IMAGE LOOKUP LOGIC ---
+                // Default image
+                let photoUrl = 'https://via.placeholder.com/150';
+
+                // Check if dataAngkatan (from db_members.js) is available
+                if (typeof dataAngkatan !== 'undefined') {
+                    // Try to find matching member in db_members to get the ID
+                    const foundMember = dataAngkatan.find(m => 
+                        m["Nama Santri"].toLowerCase().includes(randomPerson.nama.toLowerCase()) || 
+                        randomPerson.nama.toLowerCase().includes(m["Nama Santri"].toLowerCase())
+                    );
+
+                    if (foundMember) {
+                        photoUrl = `potomember/${foundMember["No Induk"]}.jpg`;
+                    }
+                }
+                
+                // Update Image Source
+                matchImage.src = photoUrl;
+                
+                // Handle image error (fallback to placeholder if file not found)
+                matchImage.onerror = function() {
+                    this.src = 'https://via.placeholder.com/150';
+                };
+
+                // Show Result
                 document.getElementById('matchName').innerText = randomPerson.nama;
                 document.getElementById('compatibility').innerText = `🔥 Kecocokan: ${score}%`;
-                resultArea.style.display = "block";
+                resultArea.style.display = "flex";
 
+                // Reset Button & Input State
                 resetState();
             }, 1500); 
         }
-        
-        // ... Fungsi resetState, closeModal, dan Event Listener tetap sama ...
+
         function resetState() {
             const inputEl = document.getElementById('userName');
             const btn = document.getElementById('btnMatch');
@@ -786,7 +897,9 @@ Zara Irdina binti Ahmad Nuzi    N
             btn.disabled = false;
             spinner.style.display = 'none';
             btnText.style.display = 'block';
-            inputEl.focus(); 
+            
+            // Optional: Fokus balik ke input
+             inputEl.focus(); 
         }
 
         function closeModal() {
@@ -794,6 +907,8 @@ Zara Irdina binti Ahmad Nuzi    N
             document.getElementById('userName').focus();
         }
 
+        // --- NEW: ENTER KEY LISTENER ---
+        // Biar bisa pencet Enter di input field
         document.getElementById('userName').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 findMatch();
